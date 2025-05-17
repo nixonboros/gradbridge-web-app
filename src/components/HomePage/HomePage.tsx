@@ -50,10 +50,6 @@ const HomePage = () => {
               <div className="nav-icon"><FiUsers size={22} /></div>
               <span>Interview</span>
             </div>
-            <div className="nav-item">
-              <div className="nav-icon"><FiUser size={22} /></div>
-              <span>Profile</span>
-            </div>
           </div>
         </div>
         
