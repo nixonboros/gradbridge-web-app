@@ -25,7 +25,7 @@ body {
 }
 
 .app-fade-in {
-  animation: fadeIn 1s cubic-bezier(.4,0,.2,1);
+  animation: fadeIn 0.7s cubic-bezier(.4,0,.2,1);
 }
 
 @keyframes fadeIn {

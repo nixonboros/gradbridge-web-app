@@ -6,7 +6,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    animation: splashFadeUp 1s 1.2s forwards;
+    animation: splashFadeUp 0.5s 0.7s forwards;
   }
   
   .splash-logo {

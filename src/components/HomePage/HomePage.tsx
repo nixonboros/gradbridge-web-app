@@ -6,6 +6,7 @@ import { FiBell, FiHome, FiShare2, FiFileText, FiUser, FiUsers } from 'react-ico
 const HomePage = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
+  const [fadeIn, setFadeIn] = useState(false);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -20,8 +21,12 @@ const HomePage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownOpen]);
 
+  useEffect(() => {
+    setFadeIn(true);
+  }, []);
+
   return (
-    <div className="home-root">
+    <div className={`home-root${fadeIn ? ' home-fade-in' : ''}`}>
       <header className="home-header">
         <div className="home-header-left">
           <img src={gradBridgeLogo} alt="GradBridge" className="home-logo" />
