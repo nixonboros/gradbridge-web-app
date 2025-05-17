@@ -1,0 +1,23 @@
+.splash-screen {
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: splashFadeUp 1s 1.2s forwards;
+  }
+  
+  .splash-logo {
+    height: 120px;
+    width: auto;
+  }
+  
+  @keyframes splashFadeUp {
+    to {
+      opacity: 0;
+      transform: translateY(-100%);
+      pointer-events: none;
+    }
+  }
