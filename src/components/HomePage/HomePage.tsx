@@ -3,7 +3,11 @@ import './HomePage.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
 import { FiBell, FiHome, FiShare2, FiFileText, FiUser, FiUsers } from 'react-icons/fi';
 
-const HomePage = () => {
+type HomePageProps = {
+  onSignOut: () => void;
+};
+
+const HomePage = ({ onSignOut }: HomePageProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
   const [fadeIn, setFadeIn] = useState(false);
@@ -67,7 +71,9 @@ const HomePage = () => {
               <div className="profile-dropdown">
                 <button className="dropdown-item">View Profile</button>
                 <button className="dropdown-item">Edit Profile</button>
-                <button className="dropdown-item signout">Sign Out</button>
+                <button className="dropdown-item signout" onClick={onSignOut}>
+                  Sign Out
+                </button>
               </div>
             )}
           </div>

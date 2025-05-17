@@ -20,7 +20,7 @@ function App() {
       ) : (
         <div className="app-fade-in">
           {loggedIn ? (
-            <HomePage />
+            <HomePage onSignOut={() => setLoggedIn(false)} />
           ) : (
             <LoginPage onLogin={() => setLoggedIn(true)} />
           )}
