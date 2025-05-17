@@ -1,54 +1,59 @@
-# React + TypeScript + Vite
+# GradBridge
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**GradBridge: AI-Enhanced Networking & Recruitment Platform**
 
-Currently, two official plugins are available:
+GradBridge began as a capstone startup project, originally prototyped in Figma. Now, it is being individually developed into a fully functional web application.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The platform is designed to connect graduates with industry professionals and employers, and incorporates:
 
-## Expanding the ESLint configuration
+- **Event Management:** Organize and discover networking events, workshops, and career fairs.
+- **AI-Driven Resume Assistance:** Get personalized feedback and suggestions to improve your resume using AI.
+- **Mock Interview Simulations:** Practice and prepare for real interviews with AI-powered mock interview tools.
+- **Professional Networking:** Build connections with mentors, recruiters, and peers in your field.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting Started
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+3. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
+## Project Structure
 ```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+gradbridge-web-app
+├── public/                          # Static files served directly 
+├── src/                             # Source code for the application
+│   ├── assets/                      # Images, SVGs, and other static assets
+│   ├── components/                  # Reusable React components
+│   │   └── LoginPage/               # Login page component and its styles
+│   │       ├── LoginPage.tsx
+│   │       └── LoginPage.css
+│   ├── pages/                       # (Recommended) Route-level components/pages
+│   ├── App.tsx                      # Main application component
+│   ├── App.css                      # Global styles for the app
+│   ├── index.css                    # CSS resets and base styles
+│   ├── main.tsx                     # Entry point: renders <App /> into the DOM
+│   └── vite-env.d.ts                # Vite-specific TypeScript definitions
+├── .gitignore                       # Git ignore rules
+├── package.json                     # Project metadata and dependencies
+├── package-lock.json                # Exact dependency versions
+├── tsconfig.json                    # TypeScript configuration
+├── tsconfig.node.json               # Node-specific TypeScript config
+├── tsconfig.app.json                # App-specific TypeScript config
+├── vite.config.ts                   # Vite build tool configuration
+└── README.md                        # Project documentation
 ```
+---
+
+Developed as a capstone project to bridge the gap between graduates and the professional world with the power of AI.  
+Originally a Figma prototype, now being transformed into a real, production-ready web application.
