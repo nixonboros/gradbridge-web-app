@@ -17,19 +17,15 @@ const HomePage = () => (
           </div>
           <div className="nav-item">
             <div className="nav-icon"><FiShare2 size={22} /></div>
-            <span>Network</span>
+            <span>Events</span>
           </div>
           <div className="nav-item">
             <div className="nav-icon"><FiFileText size={22} /></div>
-            <span>AI</span>
+            <span>Resume</span>
           </div>
           <div className="nav-item">
             <div className="nav-icon"><FiUsers size={22} /></div>
-            <span>Mentors</span>
-          </div>
-          <div className="nav-item">
-            <div className="nav-icon"><FiUser size={22} /></div>
-            <span>Profile</span>
+            <span>Interview</span>
           </div>
         </div>
       </div>
