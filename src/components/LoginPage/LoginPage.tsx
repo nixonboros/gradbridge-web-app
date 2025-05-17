@@ -3,14 +3,17 @@ import './LoginPage.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
 import gradBridgeLogoText from '../../assets/gradbridge-logotext.svg';
 
-const LoginPage = () => {
+type LoginPageProps = {
+  onLogin: () => void;
+};
+
+const LoginPage = ({ onLogin }: LoginPageProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login attempt with:', { email, password });
+    onLogin();
   };
 
   return (
