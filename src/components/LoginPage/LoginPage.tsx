@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './LoginPage.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
-import gradBridgeLogoText from '../../assets/gradbridge-logotext.svg';
+import gradBridgeLogoText from '../../assets/gradbridge-logotext-white.svg';
 
 type LoginPageProps = {
   onLogin: () => void;
