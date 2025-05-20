@@ -30,10 +30,10 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
   }, []);
 
   return (
-    <div className={`home-root fade-init${fadeIn ? ' fade-in' : ''}`}>
+    <div className="home-root">
       <Header onSignOut={onSignOut} />
       <main className="home-main">
-        <div className="home-main-inner">
+        <div className={`home-main-inner fade-init${fadeIn ? ' fade-in' : ''}`}>
           <h1 className="home-greeting">Welcome back, Alexa!</h1>
           <div className="home-sections">
             <section className="home-section">

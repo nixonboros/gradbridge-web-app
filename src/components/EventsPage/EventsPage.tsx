@@ -9,11 +9,12 @@ const EventsPage = ({ onSignOut }: EventsPageProps) => {
   const [fadeIn, setFadeIn] = useState(false);
   useEffect(() => { setFadeIn(true); }, []);
   return (
-    <div className={`home-root fade-init${fadeIn ? ' fade-in' : ''}`}>
+    <div className="home-root">
       <Header onSignOut={onSignOut} />
       <main className="home-main">
-        <div className="home-main-inner">
+        <div className={`home-main-inner fade-init${fadeIn ? ' fade-in' : ''}`}>
           {/* Empty content for EventsPage */}
+          <h1>Events</h1>
         </div>
       </main>
     </div>
