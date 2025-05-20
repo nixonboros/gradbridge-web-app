@@ -1,6 +1,6 @@
 .home-root {
   min-height: 100vh;
-  background: #f8f8f8;
+  background: #f8f9fa;
   display: flex;
   flex-direction: column;
 }
@@ -11,56 +11,72 @@
   align-items: center;
   padding: 12px 24px;
   background: #fff;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #eef2f7;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .home-header-left {
   display: flex;
   align-items: center;
-  min-width: 150px;
+  min-width: 180px;
 }
 
 .home-logo {
-  height: 48px;
+  height: 52px;
   width: auto;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
 }
 
 .home-header-right {
   display: flex;
   align-items: center;
-  gap: 20px;
-  min-width: 150px;
+  gap: 24px;
+  min-width: 180px;
   justify-content: flex-end;
 }
 
 .home-bell {
-  color: #222;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4b5563;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s;
+  padding: 0;
+  border-radius: 10px;
+  font-size: 20px;
 }
 
 .home-bell:hover {
   color: #2563eb;
+  background: #f0f6ff;
 }
 
 .home-avatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   background: #2563eb;
   color: #fff;
-  border-radius: 50%;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   letter-spacing: 1px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s;
+}
+
+.home-avatar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 /* Updated nav styles */
@@ -73,34 +89,38 @@
 .tab-container {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
+  background: #f8f9fa;
+  padding: 6px;
+  border-radius: 12px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  color: #888;
+  color: #6b7280;
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 8px 16px;
+  padding: 10px 20px;
   position: relative;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .nav-icon {
-  margin-right: 5px;
+  margin-right: 8px;
 }
 
 .nav-item.active {
   color: #2563eb;
-  background-color: #f0f6ff;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .nav-item:hover:not(.active) {
   color: #4b85f5;
-  background-color: #f8faff;
+  background-color: rgba(255,255,255,0.8);
 }
 
 /* Main content styles */
@@ -109,104 +129,165 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 40px 0;
+  padding: 24px;
+  min-height: calc(100vh - 76px);
 }
 
 .home-main-inner {
   width: 100%;
-  max-width: 900px;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
-  padding: 48px 56px;
-  margin: 0 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
 .home-greeting {
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+  color: #111827;
+  grid-column: 1 / -1;
 }
 
 .home-sections {
   display: flex;
-  gap: 40px;
+  flex-direction: column;
+  gap: 32px;
 }
 
 .home-section {
-  flex: 1;
-  min-width: 260px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
 
 .home-section-title {
   font-weight: 600;
   margin-bottom: 16px;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-section-title button {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.home-section-title button:hover {
+  background: #f0f6ff;
 }
 
 .event-card {
-  background: #f7faff;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  padding: 22px 18px;
+  background: #f8faff;
+  border-radius: 12px;
+  padding: 20px;
   margin-bottom: 12px;
+  border: 1px solid #eef2f7;
+  transition: all 0.2s;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .event-title {
   font-weight: 700;
   font-size: 1.1rem;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  color: #111827;
 }
 
 .event-time, .event-location {
-  font-size: 0.98rem;
-  color: #555;
-  margin-bottom: 2px;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .event-desc {
-  font-size: 0.98rem;
-  color: #333;
+  font-size: 0.9rem;
+  color: #4b5563;
   margin-top: 8px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .event-readmore {
   color: #2563eb;
   cursor: pointer;
-  font-size: 0.98rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.event-readmore:hover {
+  text-decoration: underline;
 }
 
 .interview-card {
-  background: #e5e5e5;
+  background: #f8f9fa;
   border-radius: 16px;
-  padding: 38px 0;
+  padding: 48px 24px;
   text-align: center;
-  color: #555;
-  font-size: 1.05rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+  border: 2px dashed #e5e7eb;
+  transition: all 0.2s;
 }
 
-/* Responsive styles */
-@media (max-width: 1100px) {
+.interview-card:hover {
+  border-color: #2563eb;
+  background: #f0f6ff;
+}
+
+/* Event cards grid should fill the width */
+.event-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Remove sidebar column breakpoints */
+@media (max-width: 1200px) {
   .home-main-inner {
-    padding: 32px 16px;
-  }
-  .home-sections {
-    flex-direction: column;
-    gap: 24px;
+    max-width: 1000px;
   }
 }
-
-@media (max-width: 900px) {
-  .tab-container {
-    gap: 0;
+@media (max-width: 1024px) {
+  .home-main-inner {
+    max-width: 800px;
   }
-  
-  .nav-item {
-    padding: 8px 10px;
+  .home-section {
+    padding: 20px;
   }
 }
 
 @media (max-width: 768px) {
+  .home-header {
+    padding: 12px 20px;
+  }
+  
   .nav-item span {
     display: none;
   }
@@ -216,13 +297,21 @@
   }
   
   .home-header-left, .home-header-right {
-    min-width: 100px;
+    min-width: 120px;
+  }
+  
+  .home-main {
+    padding: 32px 20px;
+  }
+  
+  .home-greeting {
+    font-size: 2rem;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .home-header {
-    padding: 10px 12px;
+    padding: 10px 16px;
   }
   
   .home-logo {
@@ -235,16 +324,20 @@
   }
   
   .home-header-right {
-    gap: 12px;
+    gap: 16px;
   }
   
   .home-main-inner {
-    padding: 24px 16px;
-    margin: 0 12px;
+    padding: 0;
+  }
+  
+  .home-section {
+    padding: 20px;
   }
   
   .home-greeting {
     font-size: 1.8rem;
+    margin-bottom: 24px;
   }
 }
 
@@ -253,14 +346,14 @@
   top: 110%;
   right: 0;
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-  min-width: 160px;
-  padding: 8px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  min-width: 200px;
+  padding: 8px;
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  animation: fadeInDropdown 0.18s;
+  animation: fadeInDropdown 0.2s;
 }
 
 @keyframes fadeInDropdown {
@@ -272,20 +365,32 @@
   background: none;
   border: none;
   text-align: left;
-  padding: 12px 20px;
-  font-size: 1rem;
-  color: #222;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  color: #4b5563;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.2s;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .dropdown-item:hover {
   background: #f0f6ff;
+  color: #2563eb;
 }
 
 .dropdown-item.signout {
-  color: #e11d48;
-  font-weight: 600;
+  color: #dc2626;
+  font-weight: 500;
+  margin-top: 4px;
+  border-top: 1px solid #eef2f7;
+}
+
+.dropdown-item.signout:hover {
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 .home-fade-in {
