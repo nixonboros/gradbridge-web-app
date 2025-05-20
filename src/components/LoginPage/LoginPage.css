@@ -129,4 +129,13 @@ input:focus {
   .welcome-text {
     font-size: 28px;
   }
+}
+
+.login-fade-in {
+  animation: loginFadeIn 0.7s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes loginFadeIn {
+  from { opacity: 0; transform: translateY(16px);}
+  to { opacity: 1; transform: translateY(0);}
 } 

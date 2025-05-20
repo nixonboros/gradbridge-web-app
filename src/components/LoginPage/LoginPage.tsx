@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './LoginPage.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
 import gradBridgeLogoText from '../../assets/gradbridge-logotext-white.svg';
@@ -10,6 +10,9 @@ type LoginPageProps = {
 const LoginPage = ({ onLogin }: LoginPageProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fadeIn, setFadeIn] = useState(false);
+
+  useEffect(() => { setFadeIn(true); }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +21,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
 
   return (
     <div className="login-container">
-      <div className="login-card">
+      <div className={`login-card${fadeIn ? ' login-fade-in' : ''}`}>
         <div className="logo-container">
           <div className="logo-wrapper">
             <img src={gradBridgeLogo} alt="GradBridge Logo" className="imported-logo" />
