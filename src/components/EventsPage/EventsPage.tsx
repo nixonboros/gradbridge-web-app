@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import Header from '../Header/Header';
 
-const EventsPage = () => {
+type EventsPageProps = {
+  onSignOut?: () => void;
+};
+
+const EventsPage = ({ onSignOut }: EventsPageProps) => {
   const [fadeIn, setFadeIn] = useState(false);
   useEffect(() => { setFadeIn(true); }, []);
   return (
     <div className={`home-root${fadeIn ? ' home-fade-in' : ''}`}>
-      <Header />
+      <Header onSignOut={onSignOut} />
       <main className="home-main">
         <div className="home-main-inner">
           {/* Empty content for EventsPage */}

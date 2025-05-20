@@ -10,12 +10,17 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(() => localStorage.getItem('loggedIn') === 'true');
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 1400);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleSignOut = () => {
+    setLoggedIn(false);
+    localStorage.removeItem('loggedIn');
+  };
 
   if (showSplash) return <SplashScreen />;
 
@@ -23,14 +28,23 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={
-          loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={() => setLoggedIn(true)} />
+          loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={() => {
+            setLoggedIn(true);
+            localStorage.setItem('loggedIn', 'true');
+          }} />
         } />
         <Route path="/home" element={
-          loggedIn ? <HomePage onSignOut={() => setLoggedIn(false)} /> : <Navigate to="/login" />
+          loggedIn ? <HomePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
         } />
-        <Route path="/events" element={loggedIn ? <EventsPage /> : <Navigate to="/login" />} />
-        <Route path="/resume" element={loggedIn ? <ResumePage /> : <Navigate to="/login" />} />
-        <Route path="/interview" element={loggedIn ? <InterviewPage /> : <Navigate to="/login" />} />
+        <Route path="/events" element={
+          loggedIn ? <EventsPage onSignOut={handleSignOut} /> : <Navigate to="/login" />
+        } />
+        <Route path="/resume" element={
+          loggedIn ? <ResumePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
+        } />
+        <Route path="/interview" element={
+          loggedIn ? <InterviewPage onSignOut={handleSignOut} /> : <Navigate to="/login" />
+        } />
         <Route path="/" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
         <Route path="*" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
       </Routes>
