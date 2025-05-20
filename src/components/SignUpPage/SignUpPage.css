@@ -55,7 +55,7 @@
   display: flex;
   justify-content: center;
   gap: 48px;
-  margin: 0 0 48px 0;
+  margin: 0 0 32px 0;
 }
 
 .signup-type-btn {
@@ -150,8 +150,8 @@
 }
 
 .signup-next-btn {
-  width: calc(100% - 80px);
-  margin: 0 40px;
+  width: 100%;
+  margin: 0;
   padding: 14px;
   background-color: #000000;
   color: white;
@@ -169,7 +169,6 @@
 
 .signup-form-group {
   margin-bottom: 16px;
-  padding: 0 40px;
 }
 
 .signup-form-group input {
@@ -186,10 +185,12 @@
 }
 
 .signup-btn-row {
+  width: 100%;
+  padding: 0;
+  margin: 24px 0 0 0;
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  padding: 0 40px;
 }
 .signup-back-btn {
   flex: 1;
@@ -308,12 +309,12 @@
 }
 .signup-form {
   width: 100%;
-  max-width: none;
+  max-width: 500px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding: 0 48px;
+  padding: 0 40px;
 }
 .signup-form-group {
   margin-bottom: 12px;
@@ -361,4 +362,8 @@
 .signup-step-details input {
   width: 100%;
   box-sizing: border-box;
+}
+
+.signup-step .signup-form {
+  margin-top: 0;
 } 

@@ -50,14 +50,18 @@ function AccountTypeStep({ selectedType, onSelect, onNext, onBack }: any) {
           );
         })}
       </div>
-      <button
-        className="signup-next-btn"
-        onClick={onNext}
-        disabled={!selectedType}
-        type="button"
-      >
-        Next
-      </button>
+      <div className="signup-form">
+        <div className="signup-btn-row">
+          <button
+            className="signup-next-btn"
+            onClick={onNext}
+            disabled={!selectedType}
+            type="button"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
