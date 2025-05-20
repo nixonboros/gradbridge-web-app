@@ -3,6 +3,12 @@ import './App.css';
 import LoginPage from './components/LoginPage/LoginPage';
 import HomePage from './components/HomePage/HomePage';
 import SplashScreen from './components/SplashScreen/SplashScreen';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+// Placeholder pages
+const EventsPage = () => <div style={{padding: 40}}>Events Page</div>;
+const ResumePage = () => <div style={{padding: 40}}>Resume Page</div>;
+const InterviewPage = () => <div style={{padding: 40}}>Interview Page</div>;
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -13,20 +19,24 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  if (showSplash) return <SplashScreen />;
+
   return (
-    <div className="app">
-      {showSplash ? (
-        <SplashScreen />
-      ) : (
-        <div className="app-fade-in">
-          {loggedIn ? (
-            <HomePage onSignOut={() => setLoggedIn(false)} />
-          ) : (
-            <LoginPage onLogin={() => setLoggedIn(true)} />
-          )}
-        </div>
-      )}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={
+          loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={() => setLoggedIn(true)} />
+        } />
+        <Route path="/home" element={
+          loggedIn ? <HomePage onSignOut={() => setLoggedIn(false)} /> : <Navigate to="/login" />
+        } />
+        <Route path="/events" element={loggedIn ? <EventsPage /> : <Navigate to="/login" />} />
+        <Route path="/resume" element={loggedIn ? <ResumePage /> : <Navigate to="/login" />} />
+        <Route path="/interview" element={loggedIn ? <InterviewPage /> : <Navigate to="/login" />} />
+        <Route path="/" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
+        <Route path="*" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

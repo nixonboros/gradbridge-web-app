@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import './HomePage.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
 import { FiBell, FiHome, FiShare2, FiFileText, FiUser, FiUsers, FiCalendar, FiMapPin, FiClock, FiPlus, FiChevronRight, FiBookmark, FiTrendingUp } from 'react-icons/fi';
+import { Link, useLocation } from 'react-router-dom';
 
 type HomePageProps = {
   onSignOut: () => void;
@@ -11,6 +12,7 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
   const [fadeIn, setFadeIn] = useState(false);
+  const location = useLocation();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -38,22 +40,22 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
         
         <div className="home-nav">
           <div className="tab-container">
-            <div className="nav-item active">
+            <Link to="/" className={`nav-item${location.pathname === '/' ? ' active' : ''}`}>
               <div className="nav-icon"><FiHome size={22} /></div>
               <span>Home</span>
-            </div>
-            <div className="nav-item">
+            </Link>
+            <Link to="/events" className={`nav-item${location.pathname === '/events' ? ' active' : ''}`}>
               <div className="nav-icon"><FiShare2 size={22} /></div>
               <span>Events</span>
-            </div>
-            <div className="nav-item">
+            </Link>
+            <Link to="/resume" className={`nav-item${location.pathname === '/resume' ? ' active' : ''}`}>
               <div className="nav-icon"><FiFileText size={22} /></div>
               <span>Resume</span>
-            </div>
-            <div className="nav-item">
+            </Link>
+            <Link to="/interview" className={`nav-item${location.pathname === '/interview' ? ' active' : ''}`}>
               <div className="nav-icon"><FiUsers size={22} /></div>
               <span>Interview</span>
-            </div>
+            </Link>
           </div>
         </div>
         
@@ -152,6 +154,50 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
                   <div className="event-readmore">
                     Read more
                     <FiChevronRight size={16} />
+                  </div>
+                </div>
+                <div className="event-card">
+                  <div className="event-title">AWS Cloud Workshop</div>
+                  <div className="event-time">
+                    <FiClock size={16} />
+                    1:00 PM - 4:00 PM, 02/25/2024
+                  </div>
+                  <div className="event-location">
+                    <FiMapPin size={16} />
+                    Virtual Event
+                  </div>
+                  <div className="event-desc">
+                    Learn about AWS cloud services and get hands-on experience with real-world projects. Perfect for students interested in cloud computing...
+                  </div>
+                  <div className="event-readmore">
+                    Read more
+                    <FiChevronRight size={16} />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="home-section">
+              <div className="home-section-title">
+                <span>Quick Actions</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+                <div className="event-card" style={{ cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <FiBookmark size={24} style={{ color: '#2563eb' }} />
+                    <div>
+                      <div style={{ fontWeight: '600', marginBottom: '4px' }}>Saved Events</div>
+                      <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>View your bookmarked events</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="event-card" style={{ cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <FiTrendingUp size={24} style={{ color: '#2563eb' }} />
+                    <div>
+                      <div style={{ fontWeight: '600', marginBottom: '4px' }}>Career Insights</div>
+                      <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>View industry trends</div>
+                    </div>
                   </div>
                 </div>
               </div>
