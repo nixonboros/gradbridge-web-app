@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import './HomePage.css';
-import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
-import { FiBell, FiHome, FiShare2, FiFileText, FiUser, FiUsers, FiCalendar, FiMapPin, FiClock, FiPlus, FiChevronRight, FiBookmark, FiTrendingUp } from 'react-icons/fi';
-import { Link, useLocation } from 'react-router-dom';
+import { FiCalendar, FiMapPin, FiClock, FiPlus, FiChevronRight } from 'react-icons/fi';
 import Header from '../Header/Header';
 
 type HomePageProps = {
@@ -13,7 +11,6 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
   const [fadeIn, setFadeIn] = useState(false);
-  const location = useLocation();
 
   // Close dropdown when clicking outside
   useEffect(() => {
