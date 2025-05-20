@@ -24,7 +24,9 @@ const Header = ({ onSignOut }: { onSignOut?: () => void }) => {
   return (
     <header className="home-header">
       <div className="home-header-left">
-        <img src={gradBridgeLogo} alt="GradBridge" className="home-logo" />
+        <Link to="/home">
+          <img src={gradBridgeLogo} alt="GradBridge" className="home-logo" />
+        </Link>
       </div>
       <div className="home-nav">
         <div className="tab-container">
