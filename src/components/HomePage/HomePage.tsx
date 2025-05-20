@@ -12,12 +12,19 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
   const [fadeIn, setFadeIn] = useState(false);
   useEffect(() => { setFadeIn(true); }, []);
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
   return (
     <div className="home-root">
       <Header onSignOut={onSignOut} />
       <main className="home-main">
         <div className={`home-main-inner fade-init${fadeIn ? ' fade-in' : ''}`}> 
-          <div className="home-greeting">Welcome back, Alexa!</div>
+          <div className="home-greeting">{getGreeting()}, Alexa!</div>
           {/* Two-column grid: Events, Interview*/}
           <section className="home-section" style={{gridColumn: '1/2'}}>
             <div className="home-section-title">
