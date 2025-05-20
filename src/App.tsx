@@ -6,6 +6,7 @@ import EventsPage from './components/EventsPage/EventsPage';
 import ResumePage from './components/ResumePage/ResumePage';
 import InterviewPage from './components/InterviewPage/InterviewPage';
 import SplashScreen from './components/SplashScreen/SplashScreen';
+import SignUpPage from './components/SignUpPage/SignUpPage';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 function App() {
@@ -16,6 +17,11 @@ function App() {
     const timer = setTimeout(() => setShowSplash(false), 1400);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleLogin = () => {
+    setLoggedIn(true);
+    localStorage.setItem('loggedIn', 'true');
+  };
 
   const handleSignOut = () => {
     setLoggedIn(false);
@@ -28,11 +34,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={
-          loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={() => {
-            setLoggedIn(true);
-            localStorage.setItem('loggedIn', 'true');
-          }} />
+          loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={handleLogin} />
         } />
+        <Route path="/signup" element={<SignUpPage />} />
         <Route path="/home" element={
           loggedIn ? <HomePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
         } />

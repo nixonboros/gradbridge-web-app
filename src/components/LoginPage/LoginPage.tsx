@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import './LoginPage.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
 import gradBridgeLogoText from '../../assets/gradbridge-logotext-white.svg';
+import { Link } from 'react-router-dom';
 
 type LoginPageProps = {
   onLogin: () => void;
@@ -60,7 +61,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
         </form>
         
         <div className="signup-link">
-          Don't have an account? <a href="#">Sign up</a>
+          Don't have an account? <Link to="/signup">Sign up</Link>
         </div>
       </div>
     </div>
