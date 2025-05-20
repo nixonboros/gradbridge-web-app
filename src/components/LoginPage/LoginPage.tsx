@@ -21,7 +21,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
 
   return (
     <div className="login-container">
-      <div className={`login-card${fadeIn ? ' login-fade-in' : ''}`}>
+      <div className={`login-card${fadeIn ? ' login-fade-in' : ' login-fade-init'}`}>
         <div className="logo-container">
           <div className="logo-wrapper">
             <img src={gradBridgeLogo} alt="GradBridge Logo" className="imported-logo" />

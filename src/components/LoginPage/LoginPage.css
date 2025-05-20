@@ -131,6 +131,10 @@ input:focus {
   }
 }
 
+.login-fade-init {
+  opacity: 0;
+}
+
 .login-fade-in {
   opacity: 1;
   animation: loginFadeIn 0.7s cubic-bezier(.4,0,.2,1);
@@ -138,7 +142,7 @@ input:focus {
 
 @keyframes loginFadeIn {
   from { 
-    opacity: 0; transform: translateY(16px);
+    opacity: 0; transform: translateY(35px);
   }
   to { 
     opacity: 1; transform: translateY(0);

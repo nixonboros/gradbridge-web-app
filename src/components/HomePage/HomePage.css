@@ -31,17 +31,6 @@
   position: relative;
 }
 
-.home-main-inner:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 0.5px;
-  background: #f1f5f9;
-  z-index: 0;
-}
-
 .home-greeting {
   font-size: 2.2rem;
   font-weight: 700;
@@ -71,7 +60,6 @@
   margin: 0 0 18px 0;
 }
 
-/* Only make the first column's section (Upcoming Events) scrollable */
 .home-main-inner > .home-section:first-child {
   overflow: hidden;
   display: flex;
@@ -367,7 +355,4 @@
     gap: 24px;
     max-width: 98vw;
 }
-  .home-main-inner:before {
-    display: none;
-  }
 }
