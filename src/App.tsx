@@ -2,13 +2,11 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import LoginPage from './components/LoginPage/LoginPage';
 import HomePage from './components/HomePage/HomePage';
+import EventsPage from './components/EventsPage/EventsPage';
+import ResumePage from './components/ResumePage/ResumePage';
+import InterviewPage from './components/InterviewPage/InterviewPage';
 import SplashScreen from './components/SplashScreen/SplashScreen';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-
-// Placeholder pages
-const EventsPage = () => <div style={{padding: 40}}>Events Page</div>;
-const ResumePage = () => <div style={{padding: 40}}>Resume Page</div>;
-const InterviewPage = () => <div style={{padding: 40}}>Interview Page</div>;
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);

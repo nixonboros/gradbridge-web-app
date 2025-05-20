@@ -3,6 +3,7 @@ import './HomePage.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
 import { FiBell, FiHome, FiShare2, FiFileText, FiUser, FiUsers, FiCalendar, FiMapPin, FiClock, FiPlus, FiChevronRight, FiBookmark, FiTrendingUp } from 'react-icons/fi';
 import { Link, useLocation } from 'react-router-dom';
+import Header from '../Header/Header';
 
 type HomePageProps = {
   onSignOut: () => void;
@@ -33,62 +34,7 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
 
   return (
     <div className={`home-root${fadeIn ? ' home-fade-in' : ''}`}>
-      <header className="home-header">
-        <div className="home-header-left">
-          <img src={gradBridgeLogo} alt="GradBridge" className="home-logo" />
-        </div>
-        
-        <div className="home-nav">
-          <div className="tab-container">
-            <Link to="/" className={`nav-item${location.pathname === '/' ? ' active' : ''}`}>
-              <div className="nav-icon"><FiHome size={22} /></div>
-              <span>Home</span>
-            </Link>
-            <Link to="/events" className={`nav-item${location.pathname === '/events' ? ' active' : ''}`}>
-              <div className="nav-icon"><FiShare2 size={22} /></div>
-              <span>Events</span>
-            </Link>
-            <Link to="/resume" className={`nav-item${location.pathname === '/resume' ? ' active' : ''}`}>
-              <div className="nav-icon"><FiFileText size={22} /></div>
-              <span>Resume</span>
-            </Link>
-            <Link to="/interview" className={`nav-item${location.pathname === '/interview' ? ' active' : ''}`}>
-              <div className="nav-icon"><FiUsers size={22} /></div>
-              <span>Interview</span>
-            </Link>
-          </div>
-        </div>
-        
-        <div className="home-header-right">
-          <FiBell className="home-bell" size={26} />
-          <div
-            className="home-avatar"
-            ref={avatarRef}
-            onClick={() => setDropdownOpen((open) => !open)}
-            tabIndex={0}
-            style={{ position: 'relative' }}
-          >
-            A
-            {dropdownOpen && (
-              <div className="profile-dropdown">
-                <button className="dropdown-item">
-                  <FiUser size={18} />
-                  View Profile
-                </button>
-                <button className="dropdown-item">
-                  <FiUser size={18} />
-                  Edit Profile
-                </button>
-                <button className="dropdown-item signout" onClick={onSignOut}>
-                  <FiUser size={18} />
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-      
+      <Header onSignOut={onSignOut} />
       <main className="home-main">
         <div className="home-main-inner">
           <h1 className="home-greeting">Welcome back, Alexa!</h1>
@@ -154,50 +100,6 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
                   <div className="event-readmore">
                     Read more
                     <FiChevronRight size={16} />
-                  </div>
-                </div>
-                <div className="event-card">
-                  <div className="event-title">AWS Cloud Workshop</div>
-                  <div className="event-time">
-                    <FiClock size={16} />
-                    1:00 PM - 4:00 PM, 02/25/2024
-                  </div>
-                  <div className="event-location">
-                    <FiMapPin size={16} />
-                    Virtual Event
-                  </div>
-                  <div className="event-desc">
-                    Learn about AWS cloud services and get hands-on experience with real-world projects. Perfect for students interested in cloud computing...
-                  </div>
-                  <div className="event-readmore">
-                    Read more
-                    <FiChevronRight size={16} />
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="home-section">
-              <div className="home-section-title">
-                <span>Quick Actions</span>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
-                <div className="event-card" style={{ cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <FiBookmark size={24} style={{ color: '#2563eb' }} />
-                    <div>
-                      <div style={{ fontWeight: '600', marginBottom: '4px' }}>Saved Events</div>
-                      <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>View your bookmarked events</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="event-card" style={{ cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <FiTrendingUp size={24} style={{ color: '#2563eb' }} />
-                    <div>
-                      <div style={{ fontWeight: '600', marginBottom: '4px' }}>Career Insights</div>
-                      <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>View industry trends</div>
-                    </div>
                   </div>
                 </div>
               </div>
