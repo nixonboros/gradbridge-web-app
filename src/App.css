@@ -24,8 +24,13 @@ body {
   height: 100vh;
 }
 
-.app-fade-in {
+.fade-init {
+  opacity: 0;
+}
+
+.fade-in {
   animation: fadeIn 0.7s cubic-bezier(.4,0,.2,1);
+  opacity: 1;
 }
 
 @keyframes fadeIn {
