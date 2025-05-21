@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './SignUpPage.css';
 import { useNavigate } from 'react-router-dom';
 import { signUp } from '../../lib/auth';
@@ -78,6 +78,18 @@ function AccountDetailsStep({ accountType, onBack, onSubmit }: any) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Add useEffect to clear error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 5000); // 5000ms = 5 seconds
+
+      // Cleanup the timer if component unmounts or error changes
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const isCompany = accountType === 'company';
 
   // Button enabled if all fields are non-empty
@@ -122,7 +134,7 @@ function AccountDetailsStep({ accountType, onBack, onSubmit }: any) {
       // If successful, redirect to login
       navigate('/login');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during signup');
+      setError('An error occurred during signup');
     } finally {
       setIsLoading(false);
     }
