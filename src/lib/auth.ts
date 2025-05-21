@@ -47,7 +47,13 @@ export async function signIn(email: string, password: string) {
       .eq('email', email)
       .single()
 
-    if (fetchError) throw fetchError
+    if (fetchError) {
+      // If the error is because no rows were found, throw our custom error
+      if (fetchError.code === 'PGRST116') {
+        throw new Error('User not found')
+      }
+      throw fetchError
+    }
     if (!user) throw new Error('User not found')
 
     // Verify the password
