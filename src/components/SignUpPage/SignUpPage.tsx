@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './SignUpPage.css';
 import { useNavigate } from 'react-router-dom';
+import { signUp } from '../../lib/auth';
 
 function IconPersonal({ selected }: { selected: boolean }) {
   return (
@@ -67,12 +68,15 @@ function AccountTypeStep({ selectedType, onSelect, onNext, onBack }: any) {
 }
 
 function AccountDetailsStep({ accountType, onBack, onSubmit }: any) {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     fullname: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const isCompany = accountType === 'company';
 
@@ -98,8 +102,34 @@ function AccountDetailsStep({ accountType, onBack, onSubmit }: any) {
   // Only allow submit if all fields are filled and valid
   const isValid = isFilled && isFullNameValid && isEmailValid && isPasswordValid && doPasswordsMatch;
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { data, error } = await signUp({
+        accountType,
+        fullName: form.fullname,
+        email: form.email,
+        password: form.password,
+      });
+
+      if (error) throw error;
+
+      // If successful, redirect to login
+      navigate('/login');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during signup');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <form className="signup-step-details" onSubmit={e => { e.preventDefault(); if (isValid) onSubmit(form); }}>
+    <form className="signup-step-details" onSubmit={handleSubmit}>
       <button className="signup-back-top-btn" onClick={onBack} type="button" aria-label="Back to type select">
         <span className="chevron-left">&#8592;</span>
       </button>
@@ -161,11 +191,19 @@ function AccountDetailsStep({ accountType, onBack, onSubmit }: any) {
             <div className="signup-helper-text">Passwords must match</div>
           )}
         </div>
+        {error && (
+          <div className="signup-error">
+            {error}
+          </div>
+        )}
         <div className="signup-btn-row">
-          <button type="submit" className="signup-next-btn" disabled={!isFilled}>
-            Create Account
+          <button 
+            type="submit" 
+            className="signup-next-btn" 
+            disabled={!isValid || isLoading}
+          >
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
-          {/* TODO: Add account creation logic here */}
         </div>
       </div>
     </form>

@@ -382,4 +382,14 @@
   margin-left: 2px;
   font-weight: 500;
   letter-spacing: 0.01em;
+}
+
+.signup-error {
+  color: #dc2626;
+  background-color: #fef2f2;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+  font-size: 14px;
+  text-align: center;
 } 
