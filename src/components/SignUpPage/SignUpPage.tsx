@@ -155,7 +155,10 @@ function AccountDetailsStep({ accountType, onBack }: {
     try {
       const { error } = await signUp({
         accountType: accountType as 'personal' | 'company',
-        fullName: form.fullname,
+        fullName: form.fullname
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' '),
         email: form.email,
         password: form.password,
       });
