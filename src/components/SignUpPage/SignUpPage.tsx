@@ -134,7 +134,38 @@ function AccountDetailsStep({ accountType, onBack, onSubmit }: any) {
       // If successful, redirect to login
       navigate('/login');
     } catch (err) {
-      setError('An error occurred during signup');
+      if (err instanceof Error) {
+        // Make error messages more user-friendly
+        const errorMessage = err.message;
+        
+        // Handle common Supabase errors
+        if (errorMessage.includes('duplicate key')) {
+          setError('This email is already registered. Please use a different email or try logging in.');
+        } else if (errorMessage.includes('network')) {
+          setError('Network error. Please check your internet connection and try again.');
+        } else if (errorMessage.includes('timeout')) {
+          setError('Request timed out. Please try again.');
+        } else if (errorMessage.includes('permission denied')) {
+          setError('Unable to create account. Please try again later.');
+        } else if (errorMessage.includes('invalid input')) {
+          setError('Please check your information and try again.');
+        } else {
+          // For any other error, show a generic but helpful message
+          setError('Unable to create account. Please try again.');
+        }
+      } else if (typeof err === 'object' && err !== null) {
+        // Handle Supabase error objects
+        const errorObj = err as any;
+        if (errorObj.code === '23505') { // Unique violation
+          setError('This email is already registered. Please use a different email or try logging in.');
+        } else if (errorObj.code === '23503') { // Foreign key violation
+          setError('Invalid account type. Please try again.');
+        } else {
+          setError('Unable to create account. Please try again.');
+        }
+      } else {
+        setError('Unable to create account. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
