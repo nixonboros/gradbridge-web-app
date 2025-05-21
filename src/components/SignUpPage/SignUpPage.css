@@ -182,6 +182,17 @@
 }
 .signup-form-group input:focus {
   border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.signup-form-group input.error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.signup-form-group input.error:focus {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
 }
 
 .signup-btn-row {
@@ -377,7 +388,7 @@
 
 .signup-helper-text {
   font-size: 13px;
-  color: #d97706;
+  color: #dc2626;
   margin-top: 4px;
   margin-left: 2px;
   font-weight: 500;

@@ -103,15 +103,62 @@ function AccountDetailsStep({ accountType, onBack, onSubmit }: any) {
   const isEmailValid = /^.+@.+$/.test(form.email); // Only require @ and at least one char after
   const isPasswordValid = form.password.length >= 8;
   const doPasswordsMatch = form.password === form.confirmPassword;
-  const isFullNameValid = !!form.fullname.trim();
+
+  // Add a state to track if the field has been touched
+  const [fullnameTouched, setFullnameTouched] = useState(false);
+  const [fullnameError, setFullnameError] = useState<string | null>(null);
+
+  // Validation function for full name
+  const validateFullName = (name: string) => {
+    // If the field is empty, return null (no error)
+    if (!name.trim()) {
+      return null;
+    }
+    
+    if (name.length < 3) {
+      return 'Name must be at least 3 characters long';
+    }
+    if (name.length > 50) {
+      return 'Name must be less than 50 characters long';
+    }
+    if (!name.includes(' ')) {
+      return 'Please enter your full name (first and last name)';
+    }
+    const nameParts = name.trim().split(/\s+/);
+    if (nameParts.length < 2) {
+      return 'Please enter both your first and last name';
+    }
+    if (nameParts.some(part => part.length < 2)) {
+      return 'Each name part must be at least 2 characters long';
+    }
+    return null;
+  };
+
+  // Update the form state with validation
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setForm(f => ({ ...f, fullname: value }));
+    // Only show validation if the field has been touched
+    if (fullnameTouched) {
+      setFullnameError(validateFullName(value));
+    }
+  };
+
+  // Handle blur event to mark field as touched
+  const handleFullNameBlur = () => {
+    setFullnameTouched(true);
+    setFullnameError(validateFullName(form.fullname));
+  };
+
+  // Update the existing validation logic
+  const isFullNameValid = !fullnameError && form.fullname.trim().length > 0;
 
   // Error states
-  const fullnameError = form.fullname && !isFullNameValid;
   const emailError = form.email && !isEmailValid;
   const passwordError = form.password && !isPasswordValid;
   const confirmError = form.password && form.confirmPassword && !doPasswordsMatch;
 
-  // Only allow submit if all fields are filled and valid
+  // Update the isValid check to include full name validation
   const isValid = isFilled && isFullNameValid && isEmailValid && isPasswordValid && doPasswordsMatch;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -185,9 +232,13 @@ function AccountDetailsStep({ accountType, onBack, onSubmit }: any) {
             type="text"
             placeholder="Full Name"
             value={form.fullname}
-            onChange={e => setForm(f => ({ ...f, fullname: e.target.value }))}
+            onChange={handleFullNameChange}
+            onBlur={handleFullNameBlur}
             style={fullnameError ? { borderColor: '#ef4444' } : {}}
           />
+          {fullnameTouched && fullnameError && (
+            <div className="signup-helper-text">{fullnameError}</div>
+          )}
         </div>
         <div className="signup-form-group">
           <label className="signup-input-label" htmlFor="signup-email">{isCompany ? 'Work Email Address' : 'Email Address'}</label>
