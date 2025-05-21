@@ -55,5 +55,6 @@ gradbridge-web-app
 ```
 ---
 
-Developed as a capstone project to bridge the gap between graduates and the professional world with the power of AI.  
+Developed as a capstone project to bridge the gap between graduates and the professional world with the power of AI.
+
 Originally a Figma prototype, now being transformed into a real, production-ready web application.
