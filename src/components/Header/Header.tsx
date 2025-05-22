@@ -1,8 +1,9 @@
 import './Header.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
-import { FiBell, FiHome, FiShare2, FiFileText, FiUser, FiUsers, FiEdit2, FiLogOut } from 'react-icons/fi';
+import { FiHome, FiShare2, FiFileText, FiUser, FiUsers, FiEdit2, FiLogOut } from 'react-icons/fi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import NotificationPanel from '../NotificationPanel/NotificationPanel';
 
 const Header = ({ onSignOut }: { onSignOut?: () => void }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -55,7 +56,7 @@ const Header = ({ onSignOut }: { onSignOut?: () => void }) => {
         </div>
       </div>
       <div className="home-header-right">
-        <FiBell className="home-bell" size={26} />
+        <NotificationPanel />
         <div
           className="home-avatar"
           ref={avatarRef}
