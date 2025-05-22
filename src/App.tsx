@@ -7,6 +7,7 @@ import ResumePage from './components/ResumePage/ResumePage';
 import InterviewPage from './components/InterviewPage/InterviewPage';
 import SplashScreen from './components/SplashScreen/SplashScreen';
 import SignUpPage from './components/SignUpPage/SignUpPage';
+import ProfilePage from './components/ProfilePage/ProfilePage';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 function App() {
@@ -48,6 +49,9 @@ function App() {
         } />
         <Route path="/interview" element={
           loggedIn ? <InterviewPage onSignOut={handleSignOut} /> : <Navigate to="/login" />
+        } />
+        <Route path="/profile" element={
+          loggedIn ? <ProfilePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
         } />
         <Route path="/" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
         <Route path="*" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />

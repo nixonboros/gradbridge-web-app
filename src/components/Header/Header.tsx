@@ -1,13 +1,14 @@
 import './Header.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
-import { FiBell, FiHome, FiShare2, FiFileText, FiUser, FiUsers } from 'react-icons/fi';
-import { Link, useLocation } from 'react-router-dom';
+import { FiBell, FiHome, FiShare2, FiFileText, FiUser, FiUsers, FiEdit2, FiLogOut } from 'react-icons/fi';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 
 const Header = ({ onSignOut }: { onSignOut?: () => void }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -20,6 +21,11 @@ const Header = ({ onSignOut }: { onSignOut?: () => void }) => {
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownOpen]);
+
+  const handleProfile = () => {
+    navigate('/profile');
+    setDropdownOpen(false);
+  };
 
   return (
     <header className="home-header">
@@ -60,16 +66,16 @@ const Header = ({ onSignOut }: { onSignOut?: () => void }) => {
           A
           {dropdownOpen && (
             <div className="profile-dropdown">
-              <button className="dropdown-item">
+              <button className="dropdown-item" onClick={handleProfile} type="button">
                 <FiUser size={18} />
                 View Profile
               </button>
-              <button className="dropdown-item">
-                <FiUser size={18} />
+              <button className="dropdown-item" onClick={handleProfile} type="button">
+                <FiEdit2 size={18} />
                 Edit Profile
               </button>
-              <button className="dropdown-item signout" onClick={onSignOut}>
-                <FiUser size={18} />
+              <button className="dropdown-item signout" onClick={onSignOut} type="button">
+                <FiLogOut size={18} />
                 Sign Out
               </button>
             </div>
