@@ -46,7 +46,7 @@ const LandingPage = ({ loggedIn, onSignOut }: LandingPageProps) => {
               GradBridge connects graduates with industry professionals and employers, enhanced by powerful AI tools for career success.
             </p>
             <div className="landing-cta">
-              <button className="primary-btn">Get Started</button>
+              <button className="primary-btn" onClick={() => navigate('/signup')}>Get Started</button>
               <button className="secondary-btn">Learn More</button>
             </div>
           </div>
@@ -123,7 +123,7 @@ const LandingPage = ({ loggedIn, onSignOut }: LandingPageProps) => {
         <section className="landing-cta-bottom">
           <h2>Ready to Take the Next Step?</h2>
           <p>Join GradBridge today and start building the career of your dreams.</p>
-          <button className="primary-btn">Sign Up Now</button>
+          <button className="primary-btn" onClick={() => navigate('/signup')}>Sign Up Now</button>
         </section>
 
         <footer className="landing-footer">
@@ -136,7 +136,6 @@ const LandingPage = ({ loggedIn, onSignOut }: LandingPageProps) => {
               <strong>Quick Links</strong>
               <ul>
                 <li>About Us</li>
-                <li>Events</li>
                 <li>Contact</li>
                 <li>Privacy Policy</li>
               </ul>
@@ -144,10 +143,9 @@ const LandingPage = ({ loggedIn, onSignOut }: LandingPageProps) => {
             <div>
               <strong>Features</strong>
               <ul>
+                <li>Events</li>
                 <li>Resume AI</li>
                 <li>Mock Interviews</li>
-                <li>Networking</li>
-                <li>Career Fairs</li>
               </ul>
             </div>
           </div>
