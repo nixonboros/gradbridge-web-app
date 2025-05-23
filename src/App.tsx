@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import LandingPage from './components/LandingPage/LandingPage';
 import LoginPage from './components/LoginPage/LoginPage';
 import HomePage from './components/HomePage/HomePage';
 import EventsPage from './components/EventsPage/EventsPage';
@@ -34,6 +35,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={
           loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={handleLogin} />
         } />
@@ -53,7 +55,6 @@ function App() {
         <Route path="/profile" element={
           loggedIn ? <ProfilePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
         } />
-        <Route path="/" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
         <Route path="*" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
       </Routes>
     </BrowserRouter>

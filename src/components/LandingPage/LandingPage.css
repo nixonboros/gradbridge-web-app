@@ -1,0 +1,275 @@
+/* src/components/LandingPage/LandingPage.css */
+.landing-root {
+  font-family: 'Inter', Arial, sans-serif;
+  color: #111827;
+  background: #f8fafc;
+}
+
+.landing-hero {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  color: #fff;
+  text-align: center;
+  padding: 64px 16px 48px 16px;
+}
+
+.landing-logo {
+  height: 56px;
+  margin-bottom: 24px;
+}
+
+.landing-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.landing-subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 32px;
+  font-weight: 400;
+  opacity: 0.95;
+}
+
+.landing-cta {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.primary-btn, .secondary-btn {
+  padding: 14px 36px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.primary-btn {
+  background: #fff;
+  color: #2563eb;
+  border: 2px solid #fff;
+}
+
+.primary-btn:hover {
+  background: #e0e7ff;
+}
+
+.secondary-btn {
+  background: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+.secondary-btn:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+.landing-features {
+  background: #f8fafc;
+  text-align: center;
+  padding: 56px 16px 40px 16px;
+}
+
+.landing-features h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.landing-features p {
+  color: #6b7280;
+  margin-bottom: 32px;
+}
+
+.feature-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+.feature-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  padding: 32px 24px;
+  width: 320px;
+  text-align: left;
+  transition: transform 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.icon-bg {
+  background: #e0f2fe;
+  color: #0284c7;
+  padding: 0.75rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-size: 2rem;
+}
+
+.feature-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #1e293b;
+}
+
+.feature-card p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.landing-why {
+  background: #fff;
+  padding: 64px 16px;
+  text-align: center;
+}
+
+.landing-why h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  color: #1e293b;
+}
+
+.why-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 48px;
+  margin-top: 24px;
+}
+
+.why-image {
+  width: 340px;
+  max-width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+
+.why-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 400px;
+  text-align: left;
+}
+
+.why-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.why-icon-bg {
+  min-width: 44px;
+  min-height: 44px;
+  background: #dbeafe;
+  color: #2563eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-top: 2px;
+}
+
+.why-item h4 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #1e293b;
+}
+
+.why-item p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.landing-cta-bottom {
+  background: linear-gradient(135deg, #2563eb 0%, #4f8cff 100%);
+  color: #fff;
+  text-align: center;
+  padding: 56px 16px 48px 16px;
+}
+
+.landing-cta-bottom h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.landing-cta-bottom p {
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+}
+
+.landing-footer {
+  background: #1e293b;
+  color: #cbd5e1;
+  padding: 40px 16px 16px 16px;
+  font-size: 1rem;
+}
+
+.footer-columns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 48px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.footer-columns > div {
+  min-width: 180px;
+}
+
+.footer-columns strong {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.footer-columns ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0 0;
+}
+
+.footer-columns li {
+  margin-bottom: 8px;
+}
+
+.footer-socials img {
+  height: 28px;
+  width: 28px;
+  margin-right: 12px;
+  border-radius: 6px;
+  background: #fff;
+  padding: 2px;
+  transition: box-shadow 0.2s;
+}
+
+.footer-socials img:hover {
+  box-shadow: 0 2px 8px #2563eb44;
+}
+
+.footer-bottom {
+  border-top: 1px solid #334155;
+  margin-top: 16px;
+  padding-top: 12px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #64748b;
+}

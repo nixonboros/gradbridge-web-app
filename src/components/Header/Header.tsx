@@ -31,7 +31,7 @@ const Header = ({ onSignOut }: { onSignOut?: () => void }) => {
   return (
     <header className="home-header">
       <div className="home-header-left">
-        <Link to="/home">
+        <Link to="/">
           <img src={gradBridgeLogo} alt="GradBridge" className="home-logo" />
         </Link>
       </div>
