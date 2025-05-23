@@ -1,0 +1,320 @@
+/* src/components/ProfilePage/ProfilePage.css */
+
+.profile-root {
+  font-family: 'Inter', Arial, sans-serif;
+  color: #111827;
+  background: #f8fafc;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f8fafc;
+  padding: 32px 0 0 0;
+}
+
+.profile-main-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 32px 16px;
+}
+
+.profile-header {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  padding: 32px 32px 24px 32px;
+  margin-bottom: 32px;
+}
+
+.profile-header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.profile-name {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.profile-email {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.profile-major-badge {
+  display: inline-block;
+  background: #e0e7ff;
+  color: #2563eb;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 4px 14px;
+  margin-bottom: 4px;
+}
+
+.profile-header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.profile-content-grid {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.profile-sidebar {
+  flex: 0 0 270px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-main-content {
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  padding: 24px 24px 20px 24px;
+  margin-bottom: 0;
+}
+
+.profile-card h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #1e293b;
+}
+
+.profile-details-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.profile-details-list li {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-link {
+  color: #2563eb;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.profile-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-badge {
+  background: #f1f5f9;
+  color: #2563eb;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 4px 12px;
+}
+
+.profile-resume-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.profile-upload-btn {
+  background: none;
+  color: #2563eb;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+}
+.profile-upload-btn:hover {
+  color: #1d4ed8;
+}
+
+.profile-resume-file {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 6px;
+}
+
+.profile-resume-filename {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.profile-resume-date {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.profile-resume-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.profile-resume-view, .profile-resume-download {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #2563eb;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.profile-resume-view:hover, .profile-resume-download:hover {
+  background: #e0e7ff;
+}
+
+.profile-about p {
+  color: #374151;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.profile-experience-item {
+  margin-bottom: 18px;
+}
+
+.profile-experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.profile-experience-role {
+  font-weight: 700;
+}
+
+.profile-experience-dates {
+  color: #6b7280;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.profile-experience-company {
+  color: #1e293b;
+  font-size: 1rem;
+  margin-bottom: 4px;
+  font-weight: 400;
+}
+
+.profile-experience-item ul {
+  margin: 0 0 0 18px;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.profile-footer {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  padding: 24px 0 16px 0;
+  background: none;
+}
+
+.profile-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.profile-avatar {
+  width: 110px;
+  height: 110px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 2.8rem;
+  letter-spacing: 1px;
+  margin-right: 32px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.profile-detail-icon {
+  color: #2563eb;
+  font-size: 1.1rem;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .profile-content-grid {
+    flex-direction: column;
+    gap: 0;
+  }
+  .profile-sidebar {
+    flex-direction: row;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-main-inner {
+    padding: 0 4px 24px 4px;
+  }
+  .profile-header {
+    padding: 20px 8px 16px 8px;
+  }
+  .profile-content-grid {
+    flex-direction: column;
+    gap: 0;
+  }
+  .profile-sidebar {
+    flex-direction: column;
+    flex: 1 1 0%;
+    gap: 12px;
+  }
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 1.6rem;
+    margin-right: 14px;
+    border-radius: 14px;
+  }
+} 
