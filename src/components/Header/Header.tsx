@@ -43,6 +43,11 @@ const Header = ({
     setDropdownOpen(false);
   };
 
+  const handleEditProfile = () => {
+    navigate('/profile?edit=true');
+    setDropdownOpen(false);
+  };
+
   return (
     <header className="home-header">
       <div className="home-header-left">
@@ -107,7 +112,7 @@ const Header = ({
                       <FiUser size={18} />
                       View Profile
                     </button>
-                    <button className="dropdown-item" onClick={handleProfile} type="button">
+                    <button className="dropdown-item" onClick={handleEditProfile} type="button">
                       <FiEdit2 size={18} />
                       Edit Profile
                     </button>

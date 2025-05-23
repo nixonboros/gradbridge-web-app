@@ -9,7 +9,23 @@ import InterviewPage from './components/InterviewPage/InterviewPage';
 import SplashScreen from './components/SplashScreen/SplashScreen';
 import SignUpPage from './components/SignUpPage/SignUpPage';
 import ProfilePage from './components/ProfilePage/ProfilePage';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
+
+interface ProfileRouteProps {
+  onSignOut: () => void;
+}
+
+function ProfileRoute({ onSignOut }: ProfileRouteProps) {
+  const [searchParams] = useSearchParams();
+  const isEditMode = searchParams.get('edit') === 'true';
+  
+  return (
+    <ProfilePage 
+      onSignOut={onSignOut} 
+      initialEditMode={isEditMode}
+    />
+  );
+}
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -56,7 +72,7 @@ function App() {
           loggedIn ? <InterviewPage onSignOut={handleSignOut} /> : <Navigate to="/login" />
         } />
         <Route path="/profile" element={
-          loggedIn ? <ProfilePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
+          loggedIn ? <ProfileRoute onSignOut={handleSignOut} /> : <Navigate to="/login" />
         } />
         <Route path="*" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
       </Routes>

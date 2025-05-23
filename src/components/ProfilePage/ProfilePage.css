@@ -308,19 +308,29 @@
   justify-content: center;
   min-width: 0;
 }
+
+.profile-edit-btn:hover {
+  background: #f1f5f9;
+  color: #2563eb;
+  border-color: #2563eb;
+}
+
 .profile-save-btn {
   background: #2563eb;
   color: #fff;
   border: 1px solid #2563eb;
   font-weight: 600;
 }
+
 .profile-save-btn:hover {
   background: #1d4ed8;
   border-color: #1d4ed8;
 }
+
 .profile-cancel-btn {
   margin-top: 10px;
 }
+
 .profile-cancel-btn:hover {
   background: #f1f5f9;
   color: #2563eb;
@@ -334,6 +344,26 @@
   margin-top: 12px;
   width: 100%;
   align-items: flex-end;
+}
+
+.profile-edit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: #e2e8f0;
+  color: #64748b;
+  border-color: #cbd5e1;
+}
+
+.profile-save-btn:disabled {
+  background: #93c5fd;
+  border-color: #93c5fd;
+  color: #fff;
+}
+
+.profile-cancel-btn:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
 }
 
 @media (max-width: 900px) {

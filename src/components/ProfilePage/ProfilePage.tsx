@@ -1,10 +1,85 @@
 import './ProfilePage.css';
 import Header from '../Header/Header';
 import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload, FiUpload, FiFileText, FiEdit2 } from 'react-icons/fi';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
-  const [editMode, setEditMode] = useState(false);
+interface ProfileData {
+  name: string;
+  email: string;
+  age: string;
+  location: string;
+  role: string;
+  linkedin: string;
+  about: string;
+  skills: string[];
+  experience: Array<{
+    role: string;
+    company: string;
+    dates: string;
+    description: string[];
+  }>;
+}
+
+interface ProfilePageProps {
+  onSignOut?: () => void;
+  initialEditMode?: boolean;
+}
+
+const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) => {
+  const [editMode, setEditMode] = useState(initialEditMode);
+  const [isLoading, setIsLoading] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileData>({
+    name: 'Alexa Peterson',
+    email: 'alexa.j@gmail.com',
+    age: '25',
+    location: 'Sydney, Australia',
+    role: 'Software Engineer',
+    linkedin: 'linkedin.com/in/alexaj',
+    about: 'Highly motivated and results-oriented software engineer with 3+ years of experience in developing and deploying web applications. Proficient in JavaScript, React, Node.js, and cloud technologies. Passionate about creating user-friendly and scalable solutions. Eager to contribute to a dynamic team and continuously learn new technologies.',
+    skills: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'TypeScript'],
+    experience: [
+      {
+        role: 'Software Engineer',
+        company: 'Tech Solutions Inc.',
+        dates: 'Jan 2022 - Present',
+        description: [
+          'Developed and maintained web applications using React and Node.js.',
+          'Collaborated with cross-functional teams to deliver high-quality software.',
+          'Participated in code reviews and provided constructive feedback.'
+        ]
+      },
+      {
+        role: 'Junior Software Developer',
+        company: 'Innovatech Ltd.',
+        dates: 'Jun 2020 - Dec 2021',
+        description: [
+          'Assisted in the development of new features for existing applications.',
+          'Wrote unit tests and performed bug fixing.',
+          'Learned and applied new technologies under supervision.'
+        ]
+      }
+    ]
+  });
+
+  useEffect(() => {
+    setEditMode(initialEditMode);
+  }, [initialEditMode]);
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      // TODO: Implement API call to save profile data
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      setEditMode(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // TODO: Reset form data to original values
+    setEditMode(false);
+  };
 
   return (
     <div className="profile-root">
@@ -16,8 +91,8 @@ const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
               <div className="profile-header-left">
                 <div className="profile-avatar">A</div>
                 <div>
-                  <h2 className="profile-name">Alexa Peterson</h2>
-                  <div className="profile-email">alexa.j@gmail.com</div>
+                  <h2 className="profile-name">{profileData.name}</h2>
+                  <div className="profile-email">{profileData.email}</div>
                 </div>
               </div>
               <div className="profile-header-actions">
@@ -29,8 +104,20 @@ const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
                 )}
                 {editMode && (
                   <>
-                    <button className="profile-edit-btn profile-save-btn">Save Changes</button>
-                    <button className="profile-edit-btn profile-cancel-btn" onClick={() => setEditMode(false)}>Cancel</button>
+                    <button 
+                      className="profile-edit-btn profile-save-btn" 
+                      onClick={handleSave}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    <button 
+                      className="profile-edit-btn profile-cancel-btn" 
+                      onClick={handleCancel}
+                      disabled={isLoading}
+                    >
+                      Cancel
+                    </button>
                   </>
                 )}
               </div>
@@ -41,21 +128,18 @@ const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
               <div className="profile-card">
                 <h4>Profile Details</h4>
                 <ul className="profile-details-list">
-                  <li><FiUser className="profile-detail-icon" />25 years old</li>
-                  <li><FiMapPin className="profile-detail-icon" />Sydney, Australia</li>
-                  <li><FiBriefcase className="profile-detail-icon" />Software Engineer</li>
-                  <li><FiLinkedin className="profile-detail-icon" /><a href="#" className="profile-link">linkedin.com/in/alexaj</a></li>
+                  <li><FiUser className="profile-detail-icon" />{profileData.age} years old</li>
+                  <li><FiMapPin className="profile-detail-icon" />{profileData.location}</li>
+                  <li><FiBriefcase className="profile-detail-icon" />{profileData.role}</li>
+                  <li><FiLinkedin className="profile-detail-icon" /><a href="#" className="profile-link">{profileData.linkedin}</a></li>
                 </ul>
               </div>
               <div className="profile-card">
                 <h4>Skills</h4>
                 <div className="profile-skills">
-                  <span className="skill-badge">JavaScript</span>
-                  <span className="skill-badge">React</span>
-                  <span className="skill-badge">Node.js</span>
-                  <span className="skill-badge">Python</span>
-                  <span className="skill-badge">SQL</span>
-                  <span className="skill-badge">TypeScript</span>
+                  {profileData.skills.map((skill, index) => (
+                    <span key={index} className="skill-badge">{skill}</span>
+                  ))}
                 </div>
               </div>
             </aside>
@@ -82,34 +166,24 @@ const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
               </div>
               <div className="profile-card profile-about">
                 <h4>About Me</h4>
-                <p>Highly motivated and results-oriented software engineer with 3+ years of experience in developing and deploying web applications. Proficient in JavaScript, React, Node.js, and cloud technologies. Passionate about creating user-friendly and scalable solutions. Eager to contribute to a dynamic team and continuously learn new technologies.</p>
+                <p>{profileData.about}</p>
               </div>
               <div className="profile-card profile-experience">
                 <h4>Experience</h4>
-                <div className="profile-experience-item">
-                  <div className="profile-experience-header">
-                    <span className="profile-experience-role">Software Engineer</span>
-                    <span className="profile-experience-dates">Jan 2022 - Present</span>
+                {profileData.experience.map((exp, index) => (
+                  <div key={index} className="profile-experience-item">
+                    <div className="profile-experience-header">
+                      <span className="profile-experience-role">{exp.role}</span>
+                      <span className="profile-experience-dates">{exp.dates}</span>
+                    </div>
+                    <div className="profile-experience-company">{exp.company}</div>
+                    <ul>
+                      {exp.description.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
                   </div>
-                  <div className="profile-experience-company">Tech Solutions Inc.</div>
-                  <ul>
-                    <li>Developed and maintained web applications using React and Node.js.</li>
-                    <li>Collaborated with cross-functional teams to deliver high-quality software.</li>
-                    <li>Participated in code reviews and provided constructive feedback.</li>
-                  </ul>
-                </div>
-                <div className="profile-experience-item">
-                  <div className="profile-experience-header">
-                    <span className="profile-experience-role">Junior Software Developer</span>
-                    <span className="profile-experience-dates">Jun 2020 - Dec 2021</span>
-                  </div>
-                  <div className="profile-experience-company">Innovatech Ltd.</div>
-                  <ul>
-                    <li>Assisted in the development of new features for existing applications.</li>
-                    <li>Wrote unit tests and performed bug fixing.</li>
-                    <li>Learned and applied new technologies under supervision.</li>
-                  </ul>
-                </div>
+                ))}
               </div>
             </section>
           </div>
