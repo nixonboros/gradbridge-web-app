@@ -51,40 +51,40 @@ const Header = ({
         </Link>
       </div>
       <div className="home-nav">
-        <div className="tab-container">
-          <Link
-            to="/home"
-            className={`nav-item${location.pathname === '/home' ? ' active' : ''}`}
-            style={!showNavTabs ? { visibility: 'hidden' } : {}}
-          >
-            <div className="nav-icon"><FiHome size={22} /></div>
-            <span>Home</span>
-          </Link>
-          <Link
-            to="/events"
-            className={`nav-item${location.pathname === '/events' ? ' active' : ''}`}
-            style={!showNavTabs ? { visibility: 'hidden' } : {}}
-          >
-            <div className="nav-icon"><FiShare2 size={22} /></div>
-            <span>Events</span>
-          </Link>
-          <Link
-            to="/resume"
-            className={`nav-item${location.pathname === '/resume' ? ' active' : ''}`}
-            style={!showNavTabs ? { visibility: 'hidden' } : {}}
-          >
-            <div className="nav-icon"><FiFileText size={22} /></div>
-            <span>Resume</span>
-          </Link>
-          <Link
-            to="/interview"
-            className={`nav-item${location.pathname === '/interview' ? ' active' : ''}`}
-            style={!showNavTabs ? { visibility: 'hidden' } : {}}
-          >
-            <div className="nav-icon"><FiUsers size={22} /></div>
-            <span>Interview</span>
-          </Link>
-        </div>
+        {showNavTabs ? (
+          <div className="tab-container">
+            <Link
+              to="/home"
+              className={`nav-item${location.pathname === '/home' ? ' active' : ''}`}
+            >
+              <div className="nav-icon"><FiHome size={22} /></div>
+              <span>Home</span>
+            </Link>
+            <Link
+              to="/events"
+              className={`nav-item${location.pathname === '/events' ? ' active' : ''}`}
+            >
+              <div className="nav-icon"><FiShare2 size={22} /></div>
+              <span>Events</span>
+            </Link>
+            <Link
+              to="/resume"
+              className={`nav-item${location.pathname === '/resume' ? ' active' : ''}`}
+            >
+              <div className="nav-icon"><FiFileText size={22} /></div>
+              <span>Resume</span>
+            </Link>
+            <Link
+              to="/interview"
+              className={`nav-item${location.pathname === '/interview' ? ' active' : ''}`}
+            >
+              <div className="nav-icon"><FiUsers size={22} /></div>
+              <span>Interview</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="tab-container" style={{ visibility: 'hidden' }} />
+        )}
       </div>
       <div className="home-header-right">
         <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
