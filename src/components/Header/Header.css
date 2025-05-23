@@ -9,12 +9,14 @@
   top: 0;
   z-index: 100;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  font-family: 'Inter', Arial, sans-serif;
 }
 
 .home-header-left {
   display: flex;
   align-items: center;
   min-width: 180px;
+  font-family: inherit;
 }
 
 .home-logo {
@@ -30,6 +32,7 @@
   gap: 24px;
   min-width: 180px;
   justify-content: flex-end;
+  font-family: inherit;
 }
 
 .home-bell {
@@ -44,6 +47,7 @@
   padding: 0;
   border-radius: 10px;
   font-size: 20px;
+  font-family: inherit;
 }
 
 .home-bell:hover {
@@ -66,6 +70,7 @@
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
   transition: all 0.2s;
+  font-family: inherit;
 }
 
 .home-avatar:hover {
@@ -77,6 +82,7 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  font-family: inherit;
 }
 
 .tab-container {
@@ -86,6 +92,7 @@
   background: #f8f9fa;
   padding: 6px;
   border-radius: 12px;
+  font-family: inherit;
 }
 
 .nav-item {
@@ -100,6 +107,8 @@
   position: relative;
   border-radius: 8px;
   text-decoration: none;
+  font-family: inherit;
+  box-shadow: 0 2px 8px rgba(0,0,0,0); /* Reserve space for shadow */
 }
 
 .nav-icon {
@@ -130,6 +139,7 @@
   display: flex;
   flex-direction: column;
   animation: fadeInDropdown 0.2s;
+  font-family: inherit;
 }
 
 @keyframes fadeInDropdown {
@@ -152,6 +162,7 @@
   gap: 8px;
   text-decoration: none;
   width: 100%;
+  font-family: inherit;
 }
 
 .dropdown-item:hover {
