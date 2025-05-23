@@ -3,9 +3,24 @@ import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
 import { FiHome, FiShare2, FiFileText, FiUser, FiUsers, FiEdit2, FiLogOut } from 'react-icons/fi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import NotificationPanel from '../NotificationPanel/NotificationPanel';
 
-const Header = ({ onSignOut }: { onSignOut?: () => void }) => {
+interface HeaderProps {
+  onSignOut?: () => void;
+  showNavTabs?: boolean;
+  showNotification?: boolean;
+  showAvatar?: boolean;
+  rightButton?: ReactNode;
+}
+
+const Header = ({
+  onSignOut,
+  showNavTabs = true,
+  showNotification = true,
+  showAvatar = true,
+  rightButton
+}: HeaderProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
@@ -37,51 +52,76 @@ const Header = ({ onSignOut }: { onSignOut?: () => void }) => {
       </div>
       <div className="home-nav">
         <div className="tab-container">
-          <Link to="/home" className={`nav-item${location.pathname === '/home' ? ' active' : ''}`}>
+          <Link
+            to="/home"
+            className={`nav-item${location.pathname === '/home' ? ' active' : ''}`}
+            style={!showNavTabs ? { visibility: 'hidden' } : {}}
+          >
             <div className="nav-icon"><FiHome size={22} /></div>
             <span>Home</span>
           </Link>
-          <Link to="/events" className={`nav-item${location.pathname === '/events' ? ' active' : ''}`}>
+          <Link
+            to="/events"
+            className={`nav-item${location.pathname === '/events' ? ' active' : ''}`}
+            style={!showNavTabs ? { visibility: 'hidden' } : {}}
+          >
             <div className="nav-icon"><FiShare2 size={22} /></div>
             <span>Events</span>
           </Link>
-          <Link to="/resume" className={`nav-item${location.pathname === '/resume' ? ' active' : ''}`}>
+          <Link
+            to="/resume"
+            className={`nav-item${location.pathname === '/resume' ? ' active' : ''}`}
+            style={!showNavTabs ? { visibility: 'hidden' } : {}}
+          >
             <div className="nav-icon"><FiFileText size={22} /></div>
             <span>Resume</span>
           </Link>
-          <Link to="/interview" className={`nav-item${location.pathname === '/interview' ? ' active' : ''}`}>
+          <Link
+            to="/interview"
+            className={`nav-item${location.pathname === '/interview' ? ' active' : ''}`}
+            style={!showNavTabs ? { visibility: 'hidden' } : {}}
+          >
             <div className="nav-icon"><FiUsers size={22} /></div>
             <span>Interview</span>
           </Link>
         </div>
       </div>
       <div className="home-header-right">
-        <NotificationPanel />
-        <div
-          className="home-avatar"
-          ref={avatarRef}
-          onClick={() => setDropdownOpen((open) => !open)}
-          tabIndex={0}
-          style={{ position: 'relative' }}
-        >
-          A
-          {dropdownOpen && (
-            <div className="profile-dropdown">
-              <button className="dropdown-item" onClick={handleProfile} type="button">
-                <FiUser size={18} />
-                View Profile
-              </button>
-              <button className="dropdown-item" onClick={handleProfile} type="button">
-                <FiEdit2 size={18} />
-                Edit Profile
-              </button>
-              <button className="dropdown-item signout" onClick={onSignOut} type="button">
-                <FiLogOut size={18} />
-                Sign Out
-              </button>
-            </div>
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+          <div style={{ width: 44, height: 44, marginRight: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {showNotification ? <NotificationPanel /> : <div style={{ width: 44, height: 44, visibility: 'hidden' }} />}
+          </div>
+          <div style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {showAvatar ? (
+              <div
+                className="home-avatar"
+                ref={avatarRef}
+                onClick={() => setDropdownOpen((open) => !open)}
+                tabIndex={0}
+                style={{ position: 'relative' }}
+              >
+                A
+                {dropdownOpen && (
+                  <div className="profile-dropdown">
+                    <button className="dropdown-item" onClick={handleProfile} type="button">
+                      <FiUser size={18} />
+                      View Profile
+                    </button>
+                    <button className="dropdown-item" onClick={handleProfile} type="button">
+                      <FiEdit2 size={18} />
+                      Edit Profile
+                    </button>
+                    <button className="dropdown-item signout" onClick={onSignOut} type="button">
+                      <FiLogOut size={18} />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : <div style={{ width: 44, height: 44, visibility: 'hidden' }} />} 
+          </div>
         </div>
+        {rightButton}
       </div>
     </header>
   );

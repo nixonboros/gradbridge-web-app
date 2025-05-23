@@ -35,7 +35,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage loggedIn={loggedIn} onSignOut={() => {
+          handleSignOut();
+          window.location.href = '/login';
+        }} />} />
         <Route path="/login" element={
           loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={handleLogin} />
         } />
