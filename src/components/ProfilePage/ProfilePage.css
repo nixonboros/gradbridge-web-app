@@ -325,6 +325,7 @@
 .profile-save-btn:hover {
   background: #1d4ed8;
   border-color: #1d4ed8;
+  color: #fff;
 }
 
 .profile-cancel-btn {
