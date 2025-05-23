@@ -1,8 +1,11 @@
 import './ProfilePage.css';
 import Header from '../Header/Header';
-import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload } from 'react-icons/fi';
+import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload, FiUpload, FiFileText, FiEdit2 } from 'react-icons/fi';
+import { useState } from 'react';
 
 const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
+  const [editMode, setEditMode] = useState(false);
+
   return (
     <div className="profile-root">
       <Header onSignOut={onSignOut} />
@@ -13,13 +16,23 @@ const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
               <div className="profile-header-left">
                 <div className="profile-avatar">A</div>
                 <div>
-                  <h2 className="profile-name">Alexa</h2>
+                  <h2 className="profile-name">Alexa Peterson</h2>
                   <div className="profile-email">alexa.j@gmail.com</div>
-                  <div className="profile-major-badge">Computer Science</div>
                 </div>
               </div>
               <div className="profile-header-actions">
-                <button className="primary-btn">Edit Profile</button>
+                {!editMode && (
+                  <button className="profile-edit-btn" onClick={() => setEditMode(true)}>
+                    <FiEdit2 style={{ fontSize: '1.1em', marginRight: 6 }} />
+                    Edit Profile
+                  </button>
+                )}
+                {editMode && (
+                  <>
+                    <button className="profile-edit-btn profile-save-btn">Save Changes</button>
+                    <button className="profile-edit-btn profile-cancel-btn" onClick={() => setEditMode(false)}>Cancel</button>
+                  </>
+                )}
               </div>
             </div>
           </section>
@@ -42,7 +55,7 @@ const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
                   <span className="skill-badge">Node.js</span>
                   <span className="skill-badge">Python</span>
                   <span className="skill-badge">SQL</span>
-                  <span className="skill-badge">Cloud Computing</span>
+                  <span className="skill-badge">TypeScript</span>
                 </div>
               </div>
             </aside>
@@ -50,11 +63,17 @@ const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
               <div className="profile-card profile-resume">
                 <div className="profile-resume-header">
                   <h4>Resume/CV</h4>
-                  <button className="profile-upload-btn">Upload New</button>
+                  <button className="profile-upload-btn">
+                    <FiUpload style={{ fontSize: '1.1em', marginRight: 4 }} />
+                    Upload New
+                  </button>
                 </div>
                 <div className="profile-resume-file">
-                  <span className="profile-resume-filename">Alexa_Resume_2024.pdf</span>
-                  <span className="profile-resume-date">Uploaded on Jan 15, 2024</span>
+                  <FiFileText className="profile-resume-fileicon" />
+                  <div>
+                    <span className="profile-resume-filename">Alexa_Resume_2024.pdf</span>
+                    <span className="profile-resume-date">Uploaded on Jan 15, 2024</span>
+                  </div>
                   <div className="profile-resume-actions">
                     <button className="profile-resume-view"><FiEye /></button>
                     <button className="profile-resume-download"><FiDownload /></button>
@@ -97,7 +116,7 @@ const ProfilePage = ({ onSignOut }: { onSignOut?: () => void }) => {
         </div>
       </main>
       <footer className="profile-footer">
-        © 2024 YourCompany. All rights reserved.
+        © 2025 GradBridge. All rights reserved. From a capstone project to a fully functional app.
       </footer>
     </div>
   );

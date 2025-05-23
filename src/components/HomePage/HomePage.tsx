@@ -106,6 +106,9 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
             </section>
         </div>
       </main>
+      <footer className="profile-footer">
+        © 2025 GradBridge. All rights reserved. From a capstone project to a fully functional app.
+      </footer>
     </div>
   );
 };

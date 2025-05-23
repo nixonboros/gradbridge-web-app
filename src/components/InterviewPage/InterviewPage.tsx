@@ -17,6 +17,9 @@ const InterviewPage = ({ onSignOut }: InterviewPageProps) => {
           <h1>Interview</h1>
         </div>
       </main>
+      <footer className="profile-footer">
+        © 2025 GradBridge. All rights reserved. From a capstone project to a fully functional app.
+      </footer>
     </div>
   );
 };
