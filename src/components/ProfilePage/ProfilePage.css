@@ -221,6 +221,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 2px;
+  gap: 12px;
 }
 
 .profile-experience-role {
@@ -230,7 +231,6 @@
 }
 
 .profile-experience-dates {
-  margin-left: auto;
   color: #64748b;
   font-size: 0.98rem;
   font-weight: 500;
@@ -408,4 +408,283 @@
   .profile-edit-btn, .profile-save-btn, .profile-cancel-btn {
     width: 100%;
   }
-} 
+}
+
+.profile-edit-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #334155;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.profile-edit-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.profile-edit-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #334155;
+  background: #fff;
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.profile-edit-textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.skill-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skill-remove-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.skill-remove-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.skill-add-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.skill-add-input {
+  flex: 1;
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.skill-add-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.skill-add-btn:hover {
+  background: #1d4ed8;
+}
+
+.experience-add-container {
+  margin-top: 24px;
+  padding-top: 24px;
+}
+
+.experience-add-container h5 {
+  margin-bottom: 16px;
+  color: #334155;
+  font-size: 1rem;
+}
+
+.experience-add-container .profile-edit-input {
+  margin-bottom: 12px;
+}
+
+.experience-add-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.experience-add-btn:hover {
+  background: #1d4ed8;
+}
+
+.experience-remove-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.experience-remove-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.profile-experience-item {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.profile-experience-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.profile-experience-header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-experience-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.profile-experience-dates-input {
+  max-width: 180px;
+  min-width: 120px;
+}
+
+.experience-remove-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 6px;
+  margin-left: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.experience-remove-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.profile-experience-divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 18px 0 12px 0;
+}
+
+.profile-experience-date-input {
+  max-width: 160px;
+  min-width: 120px;
+}
+
+.profile-experience-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.98rem;
+  color: #334155;
+  margin-left: 12px;
+  margin-bottom: 0 !important;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.profile-experience-description-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.description-add-btn {
+  background: #f1f5f9;
+  color: #2563eb;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.97rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 12px;
+  margin-top: 2px;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.description-add-btn:hover {
+  background: #e0e7ff;
+  color: #1d4ed8;
+  border-color: #2563eb;
+}
+
+.description-remove-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s, color 0.2s;
+}
+.description-remove-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.experience-add-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0;
+}
+
+.experience-remove-btn-wide {
+  display: block;
+  width: 100%;
+  margin-top: 0;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.experience-remove-btn-wide:hover {
+  background: #dc2626;
+}
