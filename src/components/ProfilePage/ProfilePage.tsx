@@ -2,6 +2,7 @@ import './ProfilePage.css';
 import Header from '../Header/Header';
 import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload, FiUpload, FiFileText, FiEdit2 } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ProfileData {
   name: string;
@@ -26,6 +27,7 @@ interface ProfilePageProps {
 }
 
 const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) => {
+  const navigate = useNavigate();
   const [editMode, setEditMode] = useState(initialEditMode);
   const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -71,6 +73,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
       // TODO: Implement API call to save profile data
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
       setEditMode(false);
+      navigate('/profile'); // Remove edit=true from URL
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +82,12 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   const handleCancel = () => {
     // TODO: Reset form data to original values
     setEditMode(false);
+    navigate('/profile'); // Remove edit=true from URL
+  };
+
+  const handleEditClick = () => {
+    setEditMode(true);
+    navigate('/profile?edit=true'); // Add edit=true to URL
   };
 
   return (
@@ -97,7 +106,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
               </div>
               <div className="profile-header-actions">
                 {!editMode && (
-                  <button className="profile-edit-btn" onClick={() => setEditMode(true)}>
+                  <button className="profile-edit-btn" onClick={handleEditClick}>
                     <FiEdit2 style={{ fontSize: '1.1em', marginRight: 6 }} />
                     Edit Profile
                   </button>
