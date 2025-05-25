@@ -310,7 +310,13 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           <section className="profile-header">
             <div className="profile-header-main">
               <div className="profile-header-left">
-                <div className="profile-avatar">A</div>
+                <div className="profile-avatar">
+                  {
+                    profileData.name && profileData.name.trim().length > 0
+                      ? profileData.name.trim().split(' ')[0][0].toUpperCase()
+                      : '#'
+                  }
+                </div>
                 <div>
                   {editMode ? (
                     <input

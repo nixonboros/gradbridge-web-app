@@ -14,6 +14,16 @@ interface HeaderProps {
   rightButton?: ReactNode;
 }
 
+// Helper to get avatar initial from name
+function getAvatarInitial() {
+  // Try to get the user's name from localStorage (set after login/signup)
+  const name = localStorage.getItem('user_name');
+  if (name && name.trim().length > 0) {
+    return name.trim().split(' ')[0][0].toUpperCase();
+  }
+  return '#';
+}
+
 const Header = ({
   onSignOut,
   showNavTabs = true,
@@ -105,7 +115,7 @@ const Header = ({
                 tabIndex={0}
                 style={{ position: 'relative' }}
               >
-                A
+                {getAvatarInitial()}
                 {dropdownOpen && (
                   <div className="profile-dropdown">
                     <button className="dropdown-item" onClick={handleProfile} type="button">
