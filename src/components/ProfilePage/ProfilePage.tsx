@@ -66,7 +66,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         // Fetch profile from profiles table
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('age, location, role, linkedin, experience, resume_url, profile_picture_url, id')
+          .select('age, location, role, linkedin, experience, resume_url, profile_picture_url, id, about, skills')
           .eq('id', userId)
           .single();
         if (profileError || !profile) {
@@ -92,8 +92,8 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           location: profile.location || '',
           role: profile.role || '',
           linkedin: profile.linkedin || '',
-          about: '', // No about field in db yet
-          skills: [], // No skills field in db yet
+          about: profile.about || '',
+          skills: profile.skills || [],
           experience: profile.experience || [],
         });
       } catch (err) {
@@ -113,8 +113,41 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      // TODO: Implement API call to save profile data
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      const userId = localStorage.getItem('user_id');
+      if (!userId || !profileData) {
+        setIsLoading(false);
+        return;
+      }
+  
+      // Update users table (for name)
+      const { error: userError } = await supabase
+        .from('users')
+        .update({ full_name: profileData.name })
+        .eq('id', userId);
+  
+      // Update profiles table (for profile info)
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          age: profileData.age ? Number(profileData.age) : null,
+          location: profileData.location,
+          role: profileData.role || null,
+          linkedin: profileData.linkedin || null,
+          experience: profileData.experience || [],
+          about: profileData.about || null,
+          skills: profileData.skills || [],
+          // resume_url: null, // ignore for now
+          // profile_picture_url: null, // ignore for now
+        })
+        .eq('id', userId);
+  
+      if (userError || profileError) {
+        // handle error (show message, etc)
+        alert('Failed to update profile. Please try again.');
+        setIsLoading(false);
+        return;
+      }
+  
       setEditMode(false);
       navigate('/profile');
     } finally {
@@ -124,42 +157,19 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
 
   const handleCancel = () => {
     // Reset form data to original values
-    setProfileData({
-      name: 'Alexa Peterson',
-      email: 'alexa.j@gmail.com',
-      age: '25',
-      location: 'Sydney, Australia',
-      role: 'Software Engineer',
-      linkedin: 'linkedin.com/in/alexaj',
-      about: 'Highly motivated and results-oriented software engineer with 3+ years of experience in developing and deploying web applications. Proficient in JavaScript, React, Node.js, and cloud technologies. Passionate about creating user-friendly and scalable solutions. Eager to contribute to a dynamic team and continuously learn new technologies.',
-      skills: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'TypeScript'],
-      experience: [
-        {
-          role: 'Software Engineer',
-          company: 'Tech Solutions Inc.',
-          startDate: '2022-01',
-          endDate: '',
-          currentlyWorking: true,
-          description: [
-            'Developed and maintained web applications using React and Node.js.',
-            'Collaborated with cross-functional teams to deliver high-quality software.',
-            'Participated in code reviews and provided constructive feedback.'
-          ]
-        },
-        {
-          role: 'Junior Software Developer',
-          company: 'Innovatech Ltd.',
-          startDate: '2020-06',
-          endDate: '2021-12',
-          currentlyWorking: false,
-          description: [
-            'Assisted in the development of new features for existing applications.',
-            'Wrote unit tests and performed bug fixing.',
-            'Learned and applied new technologies under supervision.'
-          ]
-        }
-      ]
-    });
+    if (profileData) {
+      setProfileData({
+        name: profileData.name,
+        email: profileData.email,
+        age: profileData.age,
+        location: profileData.location,
+        role: profileData.role,
+        linkedin: profileData.linkedin,
+        about: profileData.about,
+        skills: profileData.skills,
+        experience: profileData.experience,
+      });
+    }
     setEditMode(false);
     navigate('/profile');
   };
