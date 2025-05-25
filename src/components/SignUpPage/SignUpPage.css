@@ -419,4 +419,152 @@
   100% {
     opacity: 0;
   }
+}
+
+.experience-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.experience-form-group input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.date-inputs {
+  display: flex;
+  gap: 12px;
+}
+
+.date-inputs input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+  padding: 8px 16px;
+  margin-right: 16px;
+  border: none;
+  border-radius: 4px;
+  background: #2563eb;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: #1d4ed8;
+}
+
+/* Profile Details Step Scrollable Styling */
+.profile-details-scrollable {
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 0 0 16px 0;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .profile-details-scrollable {
+    max-height: 320px;
+    padding: 0 0 12px 0;
+  }
+}
+
+.profile-details-scrollable .signup-form-group {
+  margin-bottom: 12px;
+}
+
+.profile-details-scrollable .experience-form-group {
+  margin-bottom: 12px;
+  padding: 12px;
+}
+
+.profile-details-scrollable input,
+.profile-details-scrollable textarea,
+.profile-details-scrollable select {
+  margin-bottom: 6px;
+}
+
+.experience-form-group .profile-experience-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.98rem;
+  color: #334155;
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+  user-select: none;
+  white-space: nowrap;
+  padding-left: 0;
+  line-height: 1;
+}
+.experience-form-group .profile-experience-checkbox-label input[type="checkbox"] {
+  vertical-align: middle;
+  position: static;
+  margin: 0;
+}
+
+.experience-checkbox-row {
+  display: flex;
+  align-items: center;
+}
+
+.experience-checkbox-row .profile-experience-checkbox-label {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.98rem;
+  color: #334155;
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.experience-checkbox-row .profile-experience-checkbox-label input[type="checkbox"] {
+  margin: 0;
+  vertical-align: middle;
+  position: static;
 } 
