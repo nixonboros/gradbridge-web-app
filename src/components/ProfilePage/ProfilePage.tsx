@@ -320,9 +320,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                       className="profile-edit-input"
                     />
                   ) : (
-                  <h2 className="profile-name">{profileData.name}</h2>
+                    <h2 className="profile-name">{profileData.name || <span className="profile-placeholder">No name provided</span>}</h2>
                   )}
-                  <div className="profile-email">{profileData.email}</div>
+                  <div className="profile-email">{profileData.email || <span className="profile-placeholder">No email provided</span>}</div>
                 </div>
               </div>
               <div className="profile-header-actions">
@@ -369,7 +369,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                         placeholder="Age"
                       />
                     ) : (
-                      `${profileData.age} years old`
+                      profileData.age ? `${profileData.age} years old` : <span className="profile-placeholder">No age provided</span>
                     )}
                   </li>
                   <li>
@@ -383,7 +383,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                         placeholder="Location"
                       />
                     ) : (
-                      profileData.location
+                      profileData.location || <span className="profile-placeholder">No location provided</span>
                     )}
                   </li>
                   <li>
@@ -397,7 +397,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                         placeholder="Role"
                       />
                     ) : (
-                      profileData.role
+                      profileData.role || <span className="profile-placeholder">No role provided</span>
                     )}
                   </li>
                   <li>
@@ -411,7 +411,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                         placeholder="LinkedIn URL"
                       />
                     ) : (
-                      <a href="#" className="profile-link">{profileData.linkedin}</a>
+                      profileData.linkedin ? (
+                        <a href={profileData.linkedin.startsWith('http') ? profileData.linkedin : `https://${profileData.linkedin}`} className="profile-link" target="_blank" rel="noopener noreferrer">{profileData.linkedin}</a>
+                      ) : <span className="profile-placeholder">No LinkedIn provided</span>
                     )}
                   </li>
                 </ul>
@@ -419,6 +421,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
               <div className="profile-card">
                 <h4>Skills</h4>
                 <div className="profile-skills">
+                  {profileData.skills.length === 0 && !editMode && (
+                    <span className="profile-placeholder">No skills added</span>
+                  )}
                   {profileData.skills.map((skill, index) => (
                     <span key={index} className="skill-badge">
                       {skill}
@@ -484,11 +489,14 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                     rows={6}
                   />
                 ) : (
-                <p>{profileData.about}</p>
+                  <p>{profileData.about ? profileData.about : <span className="profile-placeholder">No about information provided</span>}</p>
                 )}
               </div>
               <div className="profile-card profile-experience">
                 <h4>Experience</h4>
+                {profileData.experience.length === 0 && !editMode && (
+                  <div className="profile-placeholder" style={{ marginBottom: 12 }}>No experience added</div>
+                )}
                 {profileData.experience.map((exp, index) => (
                   <div key={index} className="profile-experience-item">
                     {editMode ? (

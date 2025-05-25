@@ -688,3 +688,8 @@
 .experience-remove-btn-wide:hover {
   background: #dc2626;
 }
+
+.profile-placeholder {
+  color: #64748b;
+  font-style: italic;
+}
