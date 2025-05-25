@@ -704,3 +704,8 @@
   margin-left: auto;
   text-align: right;
 }
+
+.profile-sidebar > .profile-card {
+  min-width: 320px;
+  width: 340px;
+}
