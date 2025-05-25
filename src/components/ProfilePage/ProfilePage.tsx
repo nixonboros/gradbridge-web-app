@@ -584,9 +584,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                       </>
                     ) : (
                       <>
-                        <div className="profile-experience-header">
+                        <div className="profile-experience-header profile-experience-header-row">
                           <span className="profile-experience-role">{exp.role}</span>
-                          <span className="profile-experience-dates">
+                          <span className="profile-experience-dates profile-experience-dates-right">
                             {exp.startDate ?
                               (() => {
                                 const d = new Date(exp.startDate + '-01');
