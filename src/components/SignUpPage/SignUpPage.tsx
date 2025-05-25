@@ -453,6 +453,11 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
     }
   };
 
+  // Validation for required fields
+  const isAgeValid = profileData.age && !isNaN(Number(profileData.age)) && Number(profileData.age) >= 16 && Number(profileData.age) <= 100;
+  const isLocationValid = profileData.location && profileData.location.trim().length > 0;
+  const isProfileValid = isAgeValid && isLocationValid;
+
   return (
     <form className="signup-step-details" onSubmit={handleSubmit}>
       <button className="signup-back-top-btn" onClick={onBack} type="button" aria-label="Back to account details">
@@ -468,7 +473,14 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
               type="number"
               placeholder="Enter your age"
               value={profileData.age}
-              onChange={(e) => setProfileData(prev => ({ ...prev, age: e.target.value }))}
+              onChange={(e) => {
+                setProfileData(prev => ({ ...prev, age: e.target.value }));
+                if (!e.target.value || isNaN(Number(e.target.value)) || Number(e.target.value) < 16 || Number(e.target.value) > 100) {
+                  setErrors(prev => ({ ...prev, age: 'Please enter a valid age between 16 and 100' }));
+                } else {
+                  setErrors(prev => { const { age, ...rest } = prev; return rest; });
+                }
+              }}
               style={errors.age ? { borderColor: '#ef4444' } : {}}
             />
             {errors.age && <div className="signup-helper-text">{errors.age}</div>}
@@ -481,14 +493,21 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
               type="text"
               placeholder="City, Country"
               value={profileData.location}
-              onChange={(e) => setProfileData(prev => ({ ...prev, location: e.target.value }))}
+              onChange={(e) => {
+                setProfileData(prev => ({ ...prev, location: e.target.value }));
+                if (!e.target.value.trim()) {
+                  setErrors(prev => ({ ...prev, location: 'Location is required' }));
+                } else {
+                  setErrors(prev => { const { location, ...rest } = prev; return rest; });
+                }
+              }}
               style={errors.location ? { borderColor: '#ef4444' } : {}}
             />
             {errors.location && <div className="signup-helper-text">{errors.location}</div>}
           </div>
 
           <div className="signup-form-group">
-            <label className="signup-input-label" htmlFor="signup-role">Role/Job Title</label>
+            <label className="signup-input-label" htmlFor="signup-role">Role/Job Title (Optional)</label>
             <input
               id="signup-role"
               type="text"
@@ -499,7 +518,7 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
           </div>
 
           <div className="signup-form-group">
-            <label className="signup-input-label" htmlFor="signup-linkedin">LinkedIn Profile URL</label>
+            <label className="signup-input-label" htmlFor="signup-linkedin">LinkedIn Profile URL (Optional)</label>
             <input
               id="signup-linkedin"
               type="url"
@@ -512,7 +531,7 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
           </div>
 
           <div className="signup-form-group">
-            <label className="signup-input-label">Work Experience *</label>
+            <label className="signup-input-label">Work Experience (Optional)</label>
             {profileData.experience.map((exp, index) => (
               <div key={index} className="experience-form-group">
                 <div className="profile-experience-row">
@@ -521,14 +540,12 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
                     placeholder="Role"
                     value={exp.role}
                     onChange={(e) => handleExperienceChange(index, 'role', e.target.value)}
-                    style={errors.experience ? { borderColor: '#ef4444' } : {}}
                   />
                   <input
                     type="text"
                     placeholder="Company"
                     value={exp.company}
                     onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
-                    style={errors.experience ? { borderColor: '#ef4444' } : {}}
                   />
                 </div>
                 <div className="profile-experience-row">
@@ -537,7 +554,6 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
                     placeholder="Start Date"
                     value={exp.startDate}
                     onChange={(e) => handleExperienceChange(index, 'startDate', e.target.value)}
-                    style={errors.experience ? { borderColor: '#ef4444' } : {}}
                   />
                   {!exp.currentlyWorking && (
                     <input
@@ -545,7 +561,6 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
                       placeholder="End Date"
                       value={exp.endDate}
                       onChange={(e) => handleExperienceChange(index, 'endDate', e.target.value)}
-                      style={errors.experience ? { borderColor: '#ef4444' } : {}}
                     />
                   )}
                 </div>
@@ -607,7 +622,6 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
             >
               <FiPlus style={{ marginRight: 4 }} /> Add Experience
             </button>
-            {errors.experience && <div className="signup-helper-text">{errors.experience}</div>}
           </div>
 
           <div className="signup-form-group">
@@ -633,7 +647,7 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
         <button 
           type="submit" 
           className="signup-next-btn" 
-          disabled={isLoading}
+          disabled={!isProfileValid || isLoading}
         >
           {isLoading ? 'Creating Account...' : 'Complete Sign Up'}
         </button>
