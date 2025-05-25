@@ -1,23 +1,32 @@
 import { supabase } from './supabase'
 import bcrypt from 'bcryptjs'
 
-// Type for the signup data
-type SignUpData = {
-  accountType: 'personal' | 'company'
-  fullName: string
-  email: string
-  password: string
+// Add types for createUserAndProfile
+interface CreateUserAndProfileParams {
+  accountType: 'personal' | 'company';
+  fullName: string;
+  email: string;
+  password: string;
+  profile: {
+    age: string;
+    location: string;
+    role: string;
+    linkedin: string;
+    experience: any;
+    resume?: File | null;
+    profilePicture?: File | null;
+  };
 }
 
-// Function to handle user signup
-export async function signUp({ accountType, fullName, email, password }: SignUpData) {
+// Function to create user and profile in one go
+export async function createUserAndProfile({ accountType, fullName, email, password, profile }: CreateUserAndProfileParams) {
   try {
     // Hash the password
     const salt = await bcrypt.genSalt(10)
     const passwordHash = await bcrypt.hash(password, salt)
 
-    // Insert the user into the database
-    const { data, error } = await supabase
+    // Insert the user into the users table
+    const { data: userData, error: userError } = await supabase
       .from('users')
       .insert([
         {
@@ -27,13 +36,33 @@ export async function signUp({ accountType, fullName, email, password }: SignUpD
           password_hash: passwordHash,
         },
       ])
-      .select()
+      .select('id')
+      .single()
 
-    if (error) throw error
+    if (userError) throw userError;
+    if (!userData?.id) throw new Error('Failed to create user');
 
-    return { data, error: null }
+    // Insert the profile into the profiles table
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert([
+        {
+          id: userData.id, // Use the same ID as the user
+          age: profile.age ? Number(profile.age) : null,
+          location: profile.location,
+          role: profile.role || null,
+          linkedin: profile.linkedin || null,
+          experience: profile.experience || null,
+          resume_url: null,
+          profile_picture_url: null,
+        },
+      ])
+
+    if (profileError) throw profileError;
+    return { error: null };
   } catch (error) {
-    return { data: null, error }
+    console.error('Error in createUserAndProfile:', error);
+    return { error };
   }
 }
 

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './SignUpPage.css';
 import { useNavigate } from 'react-router-dom';
-import { signUp } from '../../lib/auth';
+import { createUserAndProfile } from '../../lib/auth';
 import { FiPlus, FiX } from 'react-icons/fi';
+import { supabase } from '../../lib/supabase';
 
 // Types
 type AccountType = 'personal' | 'company' | '';
@@ -103,12 +104,11 @@ function AccountTypeStep({ selectedType, onSelect, onNext, onBack }: {
 }
 
 // Account Details Step
-function AccountDetailsStep({ accountType, onBack, onComplete }: {
+function AccountDetailsStep({ accountType, onBack, onNext }: {
   accountType: AccountType;
   onBack: () => void;
-  onComplete: (data: FormData) => void;
+  onNext: (data: FormData) => void;
 }) {
-  const navigate = useNavigate();
   const [form, setForm] = useState<FormData>({
     fullname: '',
     email: '',
@@ -116,17 +116,8 @@ function AccountDetailsStep({ accountType, onBack, onComplete }: {
     confirmPassword: '',
   });
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [fullnameTouched, setFullnameTouched] = useState(false);
   const [fullnameError, setFullnameError] = useState<string | null>(null);
-
-  // Clear error after 5 seconds
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => setError(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
 
   // Validation functions
   const validateFullName = (name: string): string | null => {
@@ -134,15 +125,12 @@ function AccountDetailsStep({ accountType, onBack, onComplete }: {
     if (name.length < 3) return 'Name must be at least 3 characters long';
     if (name.length > 50) return 'Name must be less than 50 characters long';
     if (!name.includes(' ')) return 'Please enter your full name (first and last name)';
-    
     const nameParts = name.trim().split(/\s+/);
     if (nameParts.length < 2) return 'Please enter both your first and last name';
     if (nameParts.some(part => part.length < 2)) return 'Each name part must be at least 2 characters long';
-    
     return null;
   };
 
-  // Form validation states
   const isEmailValid = /^.+@.+$/.test(form.email);
   const isPasswordValid = form.password.length >= 8;
   const doPasswordsMatch = form.password === form.confirmPassword;
@@ -150,7 +138,6 @@ function AccountDetailsStep({ accountType, onBack, onComplete }: {
   const isFilled = form.fullname.trim() && form.email.trim() && form.password && form.confirmPassword;
   const isValid = isFilled && isFullNameValid && isEmailValid && isPasswordValid && doPasswordsMatch;
 
-  // Event handlers
   const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setForm(f => ({ ...f, fullname: value }));
@@ -168,52 +155,23 @@ function AccountDetailsStep({ accountType, onBack, onComplete }: {
     e.preventDefault();
     if (!isValid || !accountType) return;
 
-    setIsLoading(true);
-    setError(null);
-
     try {
-      const { error } = await signUp({
-        accountType: accountType as 'personal' | 'company',
-        fullName: form.fullname
-          .split(' ')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-          .join(' '),
-        email: form.email,
-        password: form.password,
-      });
+      // Check if email exists
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('email')
+        .eq('email', form.email)
+        .single();
 
-      if (error) throw error;
-      onComplete(form);
-    } catch (err) {
-      if (err instanceof Error) {
-        const errorMessage = err.message;
-        if (errorMessage.includes('duplicate key')) {
-          setError('This email is already registered. Please use a different email or try logging in.');
-        } else if (errorMessage.includes('network')) {
-          setError('Network error. Please check your internet connection and try again.');
-        } else if (errorMessage.includes('timeout')) {
-          setError('Request timed out. Please try again.');
-        } else if (errorMessage.includes('permission denied')) {
-          setError('Unable to create account. Please try again later.');
-        } else if (errorMessage.includes('invalid input')) {
-          setError('Please check your information and try again.');
-        } else {
-          setError('Unable to create account. Please try again.');
-        }
-      } else if (typeof err === 'object' && err !== null) {
-        const errorObj = err as any;
-        if (errorObj.code === '23505') {
-          setError('This email is already registered. Please use a different email or try logging in.');
-        } else if (errorObj.code === '23503') {
-          setError('Invalid account type. Please try again.');
-        } else {
-          setError('Unable to create account. Please try again.');
-        }
-      } else {
-        setError('Unable to create account. Please try again.');
+      if (existingUser) {
+        setError('This email is already registered. Please use a different email or try logging in.');
+        return;
       }
-    } finally {
-      setIsLoading(false);
+
+      // If email is available, proceed to next step
+      onNext(form);
+    } catch (error) {
+      setError('An error occurred. Please try again.');
     }
   };
 
@@ -295,9 +253,9 @@ function AccountDetailsStep({ accountType, onBack, onComplete }: {
           <button 
             type="submit" 
             className="signup-next-btn" 
-            disabled={!isValid || isLoading}
+            disabled={!isValid}
           >
-            {isLoading ? 'Creating Account...' : 'Create Account'}
+            Next
           </button>
         </div>
       </div>
@@ -306,10 +264,11 @@ function AccountDetailsStep({ accountType, onBack, onComplete }: {
 }
 
 // Profile Details Step
-function ProfileDetailsStep({ accountType, onBack, onComplete }: {
+function ProfileDetailsStep({ onBack, onComplete }: {
   accountType: AccountType;
   onBack: () => void;
   onComplete: (data: ProfileData) => void;
+  accountData: FormData;
 }) {
   const [profileData, setProfileData] = useState<ProfileData>({
     age: '',
@@ -330,7 +289,8 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
     profilePicture: null
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof ProfileData, string>>>({});
+  // Only errors for required fields
+  const [errors, setErrors] = useState<{ age?: string; location?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
 
   // --- Experience Handlers ---
@@ -407,32 +367,17 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
     }));
   };
 
+  // Only validate required fields
   const validateForm = () => {
-    const newErrors: Partial<Record<keyof ProfileData, string>> = {};
-    
+    const newErrors: { age?: string; location?: string } = {};
     if (!profileData.age) {
       newErrors.age = 'Age is required';
     } else if (isNaN(Number(profileData.age)) || Number(profileData.age) < 16 || Number(profileData.age) > 100) {
       newErrors.age = 'Please enter a valid age between 16 and 100';
     }
-
     if (!profileData.location) {
       newErrors.location = 'Location is required';
     }
-
-    if (profileData.linkedin && !profileData.linkedin.includes('linkedin.com/')) {
-      newErrors.linkedin = 'Please enter a valid LinkedIn URL';
-    }
-
-    // Validate experience
-    if (profileData.experience.length > 0) {
-      const exp = profileData.experience[0];
-      if (!exp.role) newErrors.experience = 'Role is required';
-      if (!exp.company) newErrors.experience = 'Company is required';
-      if (!exp.startDate) newErrors.experience = 'Start date is required';
-      if (!exp.currentlyWorking && !exp.endDate) newErrors.experience = 'End date is required when not currently working';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -440,14 +385,11 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-
     setIsLoading(true);
     try {
-      // Here you would typically upload the files and save the profile data
-      // For now, we'll just pass the data to the parent component
       onComplete(profileData);
     } catch (error) {
-      console.error('Error saving profile:', error);
+      // handle error if needed
     } finally {
       setIsLoading(false);
     }
@@ -525,9 +467,7 @@ function ProfileDetailsStep({ accountType, onBack, onComplete }: {
               placeholder="https://linkedin.com/in/yourprofile"
               value={profileData.linkedin}
               onChange={(e) => setProfileData(prev => ({ ...prev, linkedin: e.target.value }))}
-              style={errors.linkedin ? { borderColor: '#ef4444' } : {}}
             />
-            {errors.linkedin && <div className="signup-helper-text">{errors.linkedin}</div>}
           </div>
 
           <div className="signup-form-group">
@@ -668,25 +608,44 @@ const SignUpPage = () => {
   const handleTypeNext = () => setStep(2);
   const handleBackToLogin = () => navigate('/login');
   const handleBackToType = () => setStep(1);
-  const handleAccountDetailsComplete = (data: FormData) => {
+  const handleAccountDetailsNext = (data: FormData) => {
     setAccountData(data);
     setStep(3);
   };
-  const handleProfileComplete = async (profileData: ProfileData) => {
-    // Here you would typically combine accountData and profileData
-    // and send them to your backend
-    try {
-      const { error } = await signUp({
-        accountType: accountType as 'personal' | 'company',
-        fullName: accountData?.fullname || '',
-        email: accountData?.email || '',
-        password: accountData?.password || '',
-      });
 
-      if (error) throw error;
+  const handleProfileComplete = async (profileData: ProfileData) => {
+    if (!accountData) return;
+    if (accountType !== 'personal' && accountType !== 'company') {
+      alert('Please select an account type.');
+      return;
+    }
+    try {
+      const { error } = await createUserAndProfile({
+        accountType,
+        fullName: accountData.fullname,
+        email: accountData.email,
+        password: accountData.password,
+        profile: profileData,
+      });
+      if (error) {
+        const pgError = error as { code?: string; message?: string; details?: string };
+        console.error('Signup error:', pgError);
+        
+        if (pgError.code === '23505') { // Unique violation
+          throw new Error('This email is already registered. Please use a different email or try logging in.');
+        } else if (pgError.code === '23503') { // Foreign key violation
+          throw new Error('Error creating profile. Please try again. (Foreign key violation)');
+        } else if (pgError.details) {
+          throw new Error(`Error: ${pgError.details}`);
+        } else {
+          throw new Error(pgError.message || 'Failed to create account');
+        }
+      }
       navigate('/login');
     } catch (err) {
-      console.error('Error during signup:', err);
+      console.error('Signup error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      alert('Error creating account: ' + errorMessage);
     }
   };
 
@@ -705,14 +664,15 @@ const SignUpPage = () => {
           <AccountDetailsStep
             accountType={accountType}
             onBack={handleBackToType}
-            onComplete={handleAccountDetailsComplete}
+            onNext={handleAccountDetailsNext}
           />
         )}
-        {step === 3 && (
+        {step === 3 && accountData && (
           <ProfileDetailsStep
             accountType={accountType}
             onBack={() => setStep(2)}
             onComplete={handleProfileComplete}
+            accountData={accountData}
           />
         )}
       </div>
