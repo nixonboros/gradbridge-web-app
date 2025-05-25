@@ -64,7 +64,6 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
         onClick={() => navigate('/')}
         type="button"
         aria-label="Back to landing page"
-        style={{ position: 'absolute', top: 18, left: 18, zIndex: 2 }}
       >
         <span className="chevron-left">&#8592;</span>
       </button>

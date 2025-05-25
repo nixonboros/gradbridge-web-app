@@ -387,7 +387,7 @@ function ProfileDetailsStep({ onBack, onComplete }: {
     if (!validateForm()) return;
     setIsLoading(true);
     try {
-      onComplete(profileData);
+      await onComplete(profileData);
     } catch (error) {
       // handle error if needed
     } finally {
@@ -601,7 +601,6 @@ const SignUpPage = () => {
   const [step, setStep] = useState(1);
   const [accountType, setAccountType] = useState<AccountType>('');
   const [accountData, setAccountData] = useState<FormData | null>(null);
-  const [fadeIn] = useState(true);
   const navigate = useNavigate();
 
   const handleTypeSelect = (type: AccountType) => setAccountType(type);
@@ -651,7 +650,7 @@ const SignUpPage = () => {
 
   return (
     <div className="signup-container">
-      <div className={`signup-card fade-init${fadeIn ? ' fade-in' : ''}`}>
+      <div className="signup-card">
         {step === 1 && (
           <AccountTypeStep
             selectedType={accountType}
