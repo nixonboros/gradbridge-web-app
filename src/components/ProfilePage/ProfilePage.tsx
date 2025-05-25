@@ -3,6 +3,7 @@ import Header from '../Header/Header';
 import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload, FiUpload, FiFileText, FiEdit2, FiPlus, FiX } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 
 interface Experience {
   role: string;
@@ -34,45 +35,12 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(initialEditMode);
   const [isLoading, setIsLoading] = useState(false);
-  const [profileData, setProfileData] = useState<ProfileData>({
-    name: 'Alexa Peterson',
-    email: 'alexa.j@gmail.com',
-    age: '25',
-    location: 'Sydney, Australia',
-    role: 'Software Engineer',
-    linkedin: 'linkedin.com/in/alexaj',
-    about: 'Highly motivated and results-oriented software engineer with 3+ years of experience in developing and deploying web applications. Proficient in JavaScript, React, Node.js, and cloud technologies. Passionate about creating user-friendly and scalable solutions. Eager to contribute to a dynamic team and continuously learn new technologies.',
-    skills: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'TypeScript'],
-    experience: [
-      {
-        role: 'Software Engineer',
-        company: 'Tech Solutions Inc.',
-        startDate: '2022-01',
-        endDate: '',
-        currentlyWorking: true,
-        description: [
-          'Developed and maintained web applications using React and Node.js.',
-          'Collaborated with cross-functional teams to deliver high-quality software.',
-          'Participated in code reviews and provided constructive feedback.'
-        ]
-      },
-      {
-        role: 'Junior Software Developer',
-        company: 'Innovatech Ltd.',
-        startDate: '2020-06',
-        endDate: '2021-12',
-        currentlyWorking: false,
-        description: [
-          'Assisted in the development of new features for existing applications.',
-          'Wrote unit tests and performed bug fixing.',
-          'Learned and applied new technologies under supervision.'
-        ]
-      }
-    ]
-  });
+  const [fetching, setFetching] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
 
   // New state for editing
-  const [newSkill, setNewSkill] = useState('');
+  const [newSkill, setNewSkill] = useState<string>('');
   const [newExperience, setNewExperience] = useState<Experience>({
     role: '',
     company: '',
@@ -81,6 +49,62 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
     currentlyWorking: false,
     description: ['']
   });
+
+  // Fetch user and profile data from Supabase on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setFetching(true);
+      setFetchError(null);
+      try {
+        // TODO: Replace with real user id from auth/session
+        const userId = localStorage.getItem('user_id');
+        if (!userId) {
+          setFetchError('User not logged in.');
+          setFetching(false);
+          return;
+        }
+        // Fetch profile from profiles table
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('age, location, role, linkedin, experience, resume_url, profile_picture_url, id')
+          .eq('id', userId)
+          .single();
+        if (profileError || !profile) {
+          setFetchError('Failed to fetch profile.');
+          setFetching(false);
+          return;
+        }
+        // Fetch user info from users table
+        const { data: user, error: userError } = await supabase
+          .from('users')
+          .select('full_name, email')
+          .eq('id', userId)
+          .single();
+        if (userError || !user) {
+          setFetchError('Failed to fetch user info.');
+          setFetching(false);
+          return;
+        }
+        setProfileData({
+          name: user.full_name,
+          email: user.email,
+          age: profile.age !== undefined && profile.age !== null ? String(profile.age) : '',
+          location: profile.location || '',
+          role: profile.role || '',
+          linkedin: profile.linkedin || '',
+          about: '', // No about field in db yet
+          skills: [], // No skills field in db yet
+          experience: profile.experience || [],
+        });
+      } catch (err) {
+        setFetchError('An error occurred while fetching profile.');
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchProfile();
+    setEditMode(initialEditMode);
+  }, [initialEditMode]);
 
   useEffect(() => {
     setEditMode(initialEditMode);
@@ -147,39 +171,45 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
 
   // New handlers for editing
   const handleProfileDataChange = (field: keyof ProfileData, value: any) => {
-    setProfileData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setProfileData(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
   };
 
   const handleAddSkill = () => {
+    if (!profileData) return;
     if (newSkill.trim() && !profileData.skills.includes(newSkill.trim())) {
-      setProfileData(prev => ({
+      setProfileData(prev => prev ? {
         ...prev,
         skills: [...prev.skills, newSkill.trim()]
-      }));
+      } : prev);
       setNewSkill('');
     }
   };
 
   const handleRemoveSkill = (skillToRemove: string) => {
-    setProfileData(prev => ({
+    if (!profileData) return;
+    setProfileData(prev => prev ? {
       ...prev,
       skills: prev.skills.filter(skill => skill !== skillToRemove)
-    }));
+    } : prev);
   };
 
   const handleAddExperience = () => {
+    if (!profileData) return;
     if (newExperience.role && newExperience.company && newExperience.startDate && (newExperience.currentlyWorking || newExperience.endDate)) {
-      setProfileData(prev => ({
+      setProfileData(prev => prev ? {
         ...prev,
         experience: [...prev.experience, {
           ...newExperience,
           startDate: newExperience.startDate.slice(0, 7),
           endDate: newExperience.endDate ? newExperience.endDate.slice(0, 7) : '',
         }]
-      }));
+      } : prev);
       setNewExperience({
         role: '',
         company: '',
@@ -192,14 +222,16 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   };
 
   const handleRemoveExperience = (index: number) => {
-    setProfileData(prev => ({
+    if (!profileData) return;
+    setProfileData(prev => prev ? {
       ...prev,
       experience: prev.experience.filter((_, i) => i !== index)
-    }));
+    } : prev);
   };
 
   const handleUpdateExperience = (index: number, field: keyof Experience, value: any) => {
-    setProfileData(prev => ({
+    if (!profileData) return;
+    setProfileData(prev => prev ? {
       ...prev,
       experience: prev.experience.map((exp, i) =>
         i === index ? {
@@ -207,7 +239,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           [field]: (field === 'startDate' || field === 'endDate') && value ? value.slice(0, 7) : value
         } : exp
       )
-    }));
+    } : prev);
   };
 
   // Helper functions for description points
@@ -218,12 +250,13 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         description: [...prev.description, '']
       }));
     } else {
-      setProfileData(prev => ({
+      if (!profileData) return;
+      setProfileData(prev => prev ? {
         ...prev,
         experience: prev.experience.map((exp, i) =>
           i === expIndex ? { ...exp, description: [...exp.description, ''] } : exp
         )
-      }));
+      } : prev);
     }
   };
 
@@ -234,14 +267,40 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         description: prev.description.filter((_, i) => i !== descIndex)
       }));
     } else {
-      setProfileData(prev => ({
+      if (!profileData) return;
+      setProfileData(prev => prev ? {
         ...prev,
         experience: prev.experience.map((exp, i) =>
           i === expIndex ? { ...exp, description: exp.description.filter((_, j) => j !== descIndex) } : exp
         )
-      }));
+      } : prev);
     }
   };
+
+  if (fetching) {
+    return (
+      <div className="profile-root">
+        <Header onSignOut={onSignOut} />
+        <main className="profile-main">
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', width: '100%' }}>
+            <div>Loading profile...</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+  if (fetchError || !profileData) {
+    return (
+      <div className="profile-root">
+        <Header onSignOut={onSignOut} />
+        <main className="profile-main">
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', width: '100%' }}>
+            <div style={{ color: '#dc2626' }}>{fetchError || 'Profile not found.'}</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-root">

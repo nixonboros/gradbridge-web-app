@@ -47,6 +47,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
       }
 
       if (data) {
+        localStorage.setItem('user_id', data.id);
         onLogin();
         navigate('/home');
       }
