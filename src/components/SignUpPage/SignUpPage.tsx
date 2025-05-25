@@ -618,13 +618,18 @@ const SignUpPage = () => {
       alert('Please select an account type.');
       return;
     }
+    // Filter out empty experience entries
+    const filteredExperience = profileData.experience.filter(exp =>
+      exp.role.trim() || exp.company.trim() || exp.startDate.trim() || exp.endDate.trim() || exp.description.some(d => d.trim())
+    );
+    const cleanedProfileData = { ...profileData, experience: filteredExperience };
     try {
       const { error } = await createUserAndProfile({
         accountType,
         fullName: accountData.fullname,
         email: accountData.email,
         password: accountData.password,
-        profile: profileData,
+        profile: cleanedProfileData,
       });
       if (error) {
         const pgError = error as { code?: string; message?: string; details?: string };
