@@ -116,6 +116,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
+          full_name: profileData.name,
           age: profileData.age ? Number(profileData.age) : null,
           location: profileData.location,
           role: profileData.role || null,
