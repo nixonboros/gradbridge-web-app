@@ -638,6 +638,15 @@ function ProfileDetailsStep({ onBack, onComplete }: {
   );
 }
 
+// Capitalize each word in a name
+function capitalizeName(name: string) {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map(word => word[0]?.toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
 // Main Component
 const SignUpPage = () => {
   const [step, setStep] = useState(1);
@@ -667,11 +676,12 @@ const SignUpPage = () => {
     const cleanedProfileData = { ...profileData, experience: filteredExperience };
     try {
       // 1. Create user in Supabase Auth
+      const capitalizedFullName = capitalizeName(accountData.fullname);
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: accountData.email,
         password: accountData.password,
         options: {
-          data: { full_name: accountData.fullname, account_type: accountType }
+          data: { full_name: capitalizedFullName, account_type: accountType }
         }
       });
       if (signUpError) {
@@ -686,7 +696,7 @@ const SignUpPage = () => {
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
-          full_name: accountData.fullname,
+          full_name: capitalizedFullName,
           account_type: accountType,
           age: cleanedProfileData.age ? Number(cleanedProfileData.age) : null,
           location: cleanedProfileData.location,
