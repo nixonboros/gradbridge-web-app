@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import './SignUpPage.css';
 import { useNavigate } from 'react-router-dom';
-import { createUserAndProfile } from '../../lib/auth';
 import { FiPlus, FiX } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
 
 // Types
 type AccountType = 'personal' | 'company' | '';
 
-interface FormData {
+interface AccountData {
   fullname: string;
   email: string;
   password: string;
@@ -119,15 +118,15 @@ function AccountTypeStep({ selectedType, onSelect, onNext, onBack }: {
 function AccountDetailsStep({ accountType, onBack, onNext }: {
   accountType: AccountType;
   onBack: () => void;
-  onNext: (data: FormData) => void;
+  onNext: (data: AccountData) => void;
 }) {
-  const [form, setForm] = useState<FormData>({
+  const [form, setForm] = useState<AccountData>({
     fullname: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const [fullnameTouched, setFullnameTouched] = useState(false);
   const [fullnameError, setFullnameError] = useState<string | null>(null);
 
@@ -167,24 +166,13 @@ function AccountDetailsStep({ accountType, onBack, onNext }: {
     e.preventDefault();
     if (!isValid || !accountType) return;
 
-    try {
-      // Check if email exists
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('email')
-        .eq('email', form.email)
-        .single();
-
-      if (existingUser) {
-        setError('This email is already registered. Please use a different email or try logging in.');
-        return;
-      }
-
-      // If email is available, proceed to next step
-      onNext(form);
-    } catch (error) {
-      setError('An error occurred. Please try again.');
-    }
+    // Only collect data and proceed to next step
+    onNext({
+      fullname: form.fullname,
+      email: form.email,
+      password: form.password,
+      confirmPassword: form.confirmPassword,
+    });
   };
 
   return (
@@ -280,7 +268,7 @@ function ProfileDetailsStep({ onBack, onComplete }: {
   accountType: AccountType;
   onBack: () => void;
   onComplete: (data: ProfileData) => void;
-  accountData: FormData;
+  accountData: AccountData;
 }) {
   const [profileData, setProfileData] = useState<ProfileData>({
     age: '',
@@ -612,14 +600,14 @@ function ProfileDetailsStep({ onBack, onComplete }: {
 const SignUpPage = () => {
   const [step, setStep] = useState(1);
   const [accountType, setAccountType] = useState<AccountType>('');
-  const [accountData, setAccountData] = useState<FormData | null>(null);
+  const [accountData, setAccountData] = useState<AccountData | null>(null);
   const navigate = useNavigate();
 
   const handleTypeSelect = (type: AccountType) => setAccountType(type);
   const handleTypeNext = () => setStep(2);
   const handleBackToLogin = () => navigate('/login');
   const handleBackToType = () => setStep(1);
-  const handleAccountDetailsNext = (data: FormData) => {
+  const handleAccountDetailsNext = (data: AccountData) => {
     setAccountData(data);
     setStep(3);
   };
@@ -636,26 +624,38 @@ const SignUpPage = () => {
     );
     const cleanedProfileData = { ...profileData, experience: filteredExperience };
     try {
-      const { error } = await createUserAndProfile({
-        accountType,
-        fullName: accountData.fullname,
+      // 1. Create user in Supabase Auth
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: accountData.email,
         password: accountData.password,
-        profile: cleanedProfileData,
-      });
-      if (error) {
-        const pgError = error as { code?: string; message?: string; details?: string };
-        console.error('Signup error:', pgError);
-        
-        if (pgError.code === '23505') { // Unique violation
-          throw new Error('This email is already registered. Please use a different email or try logging in.');
-        } else if (pgError.code === '23503') { // Foreign key violation
-          throw new Error('Error creating profile. Please try again. (Foreign key violation)');
-        } else if (pgError.details) {
-          throw new Error(`Error: ${pgError.details}`);
-        } else {
-          throw new Error(pgError.message || 'Failed to create account');
+        options: {
+          data: { full_name: accountData.fullname, account_type: accountType }
         }
+      });
+      if (signUpError) {
+        throw new Error(signUpError.message);
+      }
+      if (!data.user) {
+        throw new Error('Signup failed. No user returned.');
+      }
+      const userId = data.user.id;
+
+      // 2. Update the existing profile row with all user info
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          full_name: accountData.fullname,
+          account_type: accountType,
+          age: cleanedProfileData.age ? Number(cleanedProfileData.age) : null,
+          location: cleanedProfileData.location,
+          role: cleanedProfileData.role || null,
+          linkedin: cleanedProfileData.linkedin || null,
+          experience: cleanedProfileData.experience || null,
+          // Add other fields as needed
+        })
+        .eq('id', userId);
+      if (profileError) {
+        throw new Error(profileError.message || 'Failed to create profile');
       }
       navigate('/login');
     } catch (err) {

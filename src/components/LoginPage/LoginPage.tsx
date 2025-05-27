@@ -3,7 +3,6 @@ import './LoginPage.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
 import gradBridgeLogoText from '../../assets/gradbridge-logotext-white.svg';
 import { Link, useNavigate } from 'react-router-dom';
-import { signIn } from '../../lib/auth';
 
 type LoginPageProps = {
   onLogin: () => void;
@@ -33,25 +32,25 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
     setError(null);
 
     try {
-      const { data, error } = await signIn(email, password);
+      // Removed: const { data, error } = await signIn(email, password);
       
-      if (error) {
-        if ((error as Error).message === 'User not found') {
-          setError('No account found with this email. Please sign up first.');
-        } else if ((error as Error).message === 'Invalid password') {
-          setError('Incorrect password. Please try again.');
-        } else {
-          setError('An error occurred during login. Please try again.');
-        }
-        return;
-      }
+      // Removed: if (error) {
+      // Removed:   if ((error as Error).message === 'User not found') {
+      // Removed:     setError('No account found with this email. Please sign up first.');
+      // Removed:   } else if ((error as Error).message === 'Invalid password') {
+      // Removed:     setError('Incorrect password. Please try again.');
+      // Removed:   } else {
+      // Removed:     setError('An error occurred during login. Please try again.');
+      // Removed:   }
+      // Removed:   return;
+      // Removed: }
 
-      if (data) {
-        localStorage.setItem('user_id', data.id);
-        localStorage.setItem('user_name', data.full_name);
-        onLogin();
-        navigate('/home');
-      }
+      // Removed: if (data) {
+      // Removed:   localStorage.setItem('user_id', data.id);
+      // Removed:   localStorage.setItem('user_name', data.full_name);
+      // Removed:   onLogin();
+      // Removed:   navigate('/home');
+      // Removed: }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
     } finally {
