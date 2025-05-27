@@ -3,6 +3,7 @@ import './LoginPage.css';
 import gradBridgeLogo from '../../assets/gradbridge-logo.svg';
 import gradBridgeLogoText from '../../assets/gradbridge-logotext-white.svg';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 
 type LoginPageProps = {
   onLogin: () => void;
@@ -32,27 +33,31 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
     setError(null);
 
     try {
-      // Removed: const { data, error } = await signIn(email, password);
-      
-      // Removed: if (error) {
-      // Removed:   if ((error as Error).message === 'User not found') {
-      // Removed:     setError('No account found with this email. Please sign up first.');
-      // Removed:   } else if ((error as Error).message === 'Invalid password') {
-      // Removed:     setError('Incorrect password. Please try again.');
-      // Removed:   } else {
-      // Removed:     setError('An error occurred during login. Please try again.');
-      // Removed:   }
-      // Removed:   return;
-      // Removed: }
-
-      // Removed: if (data) {
-      // Removed:   localStorage.setItem('user_id', data.id);
-      // Removed:   localStorage.setItem('user_name', data.full_name);
-      // Removed:   onLogin();
-      // Removed:   navigate('/home');
-      // Removed: }
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (signInError) {
+        if (signInError.message.toLowerCase().includes('invalid login credentials')) {
+          setError('Incorrect email or password. Please check your credentials and try again.');
+        } else {
+          setError(`Login failed: ${signInError.message}`);
+        }
+        setIsLoading(false);
+        return;
+      }
+      if (!data.user) {
+        setError('Login failed: No user object was returned from the server.');
+        setIsLoading(false);
+        return;
+      }
+      // Store user info in localStorage
+      localStorage.setItem('user_id', data.user.id);
+      localStorage.setItem('user_name', data.user.user_metadata?.full_name || '');
+      onLogin();
+      navigate('/home');
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError('A network or unexpected error occurred during login. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
     }
