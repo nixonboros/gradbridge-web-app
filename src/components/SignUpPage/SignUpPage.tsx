@@ -119,14 +119,14 @@ function AccountDetailsStep({ accountType, onBack, onNext }: {
   accountType: AccountType;
   onBack: () => void;
   onNext: (data: AccountData) => void;
-}) {
+}): React.ReactElement {
   const [form, setForm] = useState<AccountData>({
     fullname: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-  const [error] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [fullnameTouched, setFullnameTouched] = useState(false);
   const [fullnameError, setFullnameError] = useState<string | null>(null);
 
@@ -152,9 +152,25 @@ function AccountDetailsStep({ accountType, onBack, onNext }: {
   const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setForm(f => ({ ...f, fullname: value }));
+    setError(null);
     if (fullnameTouched) {
       setFullnameError(validateFullName(value));
     }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm(f => ({ ...f, email: e.target.value }));
+    setError(null);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm(f => ({ ...f, password: e.target.value }));
+    setError(null);
+  };
+
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm(f => ({ ...f, confirmPassword: e.target.value }));
+    setError(null);
   };
 
   const handleFullNameBlur = () => {
@@ -166,13 +182,26 @@ function AccountDetailsStep({ accountType, onBack, onNext }: {
     e.preventDefault();
     if (!isValid || !accountType) return;
 
-    // Only collect data and proceed to next step
-    onNext({
-      fullname: form.fullname,
-      email: form.email,
-      password: form.password,
-      confirmPassword: form.confirmPassword,
-    });
+    setError(null);
+
+    try {
+      // Check if email is already registered
+      const { data } = await supabase.auth.signInWithPassword({
+        email: form.email,
+        password: form.password,
+      });
+
+      if (data?.user) {
+        setError('This email is already registered. Please use a different email or try logging in.');
+        return;
+      }
+
+      // If we get here, the email is available
+      onNext(form);
+    } catch (err) {
+      // If there's an error, it means the email is available
+      onNext(form);
+    }
   };
 
   return (
@@ -206,7 +235,7 @@ function AccountDetailsStep({ accountType, onBack, onNext }: {
             type="email"
             placeholder={accountType === 'company' ? 'Work Email Address' : 'Email Address'}
             value={form.email}
-            onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+            onChange={handleEmailChange}
             style={!isEmailValid && form.email ? { borderColor: '#ef4444' } : {}}
             autoComplete="email"
           />
@@ -221,7 +250,7 @@ function AccountDetailsStep({ accountType, onBack, onNext }: {
             type="password"
             placeholder="Create a Password"
             value={form.password}
-            onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+            onChange={handlePasswordChange}
             style={!isPasswordValid && form.password ? { borderColor: '#ef4444' } : {}}
             autoComplete="new-password"
           />
@@ -236,7 +265,7 @@ function AccountDetailsStep({ accountType, onBack, onNext }: {
             type="password"
             placeholder="Confirm Password"
             value={form.confirmPassword}
-            onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))}
+            onChange={handleConfirmPasswordChange}
             style={!doPasswordsMatch && form.confirmPassword ? { borderColor: '#ef4444' } : {}}
             autoComplete="new-password"
           />
@@ -245,9 +274,7 @@ function AccountDetailsStep({ accountType, onBack, onNext }: {
           )}
         </div>
         {error && (
-          <div className="signup-error">
-            {error}
-          </div>
+          <div className="signup-error" style={{ marginTop: 16 }}>{error}</div>
         )}
         <div className="signup-btn-row">
           <button 
@@ -265,26 +292,15 @@ function AccountDetailsStep({ accountType, onBack, onNext }: {
 
 // Profile Details Step
 function ProfileDetailsStep({ onBack, onComplete }: {
-  accountType: AccountType;
   onBack: () => void;
   onComplete: (data: ProfileData) => void;
-  accountData: AccountData;
 }) {
   const [profileData, setProfileData] = useState<ProfileData>({
     age: '',
     location: '',
     role: '',
     linkedin: '',
-    experience: [
-      {
-        role: '',
-        company: '',
-        startDate: '',
-        endDate: '',
-        currentlyWorking: false,
-        description: ['']
-      }
-    ],
+    experience: [],
     resume: null,
     profilePicture: null
   });
@@ -471,97 +487,123 @@ function ProfileDetailsStep({ onBack, onComplete }: {
           </div>
 
           <div className="signup-form-group">
-            <label className="signup-input-label">Work Experience (Optional)</label>
-            {profileData.experience.map((exp, index) => (
-              <div key={index} className="experience-form-group">
-                <div className="profile-experience-row">
-                  <input
-                    type="text"
-                    placeholder="Role"
-                    value={exp.role}
-                    onChange={(e) => handleExperienceChange(index, 'role', e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Company"
-                    value={exp.company}
-                    onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
-                  />
-                </div>
-                <div className="profile-experience-row">
-                  <input
-                    type="month"
-                    placeholder="Start Date"
-                    value={exp.startDate}
-                    onChange={(e) => handleExperienceChange(index, 'startDate', e.target.value)}
-                  />
-                  {!exp.currentlyWorking && (
-                    <input
-                      type="month"
-                      placeholder="End Date"
-                      value={exp.endDate}
-                      onChange={(e) => handleExperienceChange(index, 'endDate', e.target.value)}
-                    />
-                  )}
-                </div>
-                <div className="experience-checkbox-row">
-                  <label className="profile-experience-checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={exp.currentlyWorking}
-                      onChange={(e) => handleExperienceChange(index, 'currentlyWorking', e.target.checked)}
-                    />
-                    Currently Working
-                  </label>
-                </div>
-                {exp.description.map((desc, descIndex) => (
-                  <div key={descIndex} className="profile-experience-description-row">
-                    <input
-                      type="text"
-                      value={desc}
-                      onChange={(e) => handleDescriptionChange(index, descIndex, e.target.value)}
-                      className="profile-edit-input"
-                      placeholder="Description point"
-                    />
+            <label className="signup-input-label">Experience (Optional)</label>
+            {profileData.experience.length === 0 && (
+              <div style={{ marginBottom: 8, color: '#64748b', fontStyle: 'italic' }}>
+                No experience added yet.
+              </div>
+            )}
+            {profileData.experience.length > 0 && (
+              <div className="experience-form-group">
+                {profileData.experience.map((exp, index) => (
+                  <div key={index} className="profile-experience-item">
+                    <div className="profile-experience-row">
+                      <input
+                        type="text"
+                        placeholder="Role"
+                        value={exp.role}
+                        onChange={(e) => handleExperienceChange(index, 'role', e.target.value)}
+                        className="profile-edit-input"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Company"
+                        value={exp.company}
+                        onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
+                        className="profile-edit-input"
+                      />
+                    </div>
+                    <div className="profile-experience-row">
+                      <input
+                        type="month"
+                        placeholder="Start Date"
+                        value={exp.startDate}
+                        onChange={(e) => handleExperienceChange(index, 'startDate', e.target.value)}
+                        className="profile-edit-input profile-experience-date-input"
+                      />
+                      {!exp.currentlyWorking && (
+                        <input
+                          type="month"
+                          placeholder="End Date"
+                          value={exp.endDate}
+                          onChange={(e) => handleExperienceChange(index, 'endDate', e.target.value)}
+                          className="profile-edit-input profile-experience-date-input"
+                        />
+                      )}
+                      <label className="profile-experience-checkbox-label" style={{ margin: 0 }}>
+                        <input
+                          type="checkbox"
+                          checked={exp.currentlyWorking}
+                          onChange={(e) => handleExperienceChange(index, 'currentlyWorking', e.target.checked)}
+                          style={{ marginRight: 6 }}
+                        />
+                        Currently Working
+                      </label>
+                    </div>
+                    {exp.description.map((desc, descIndex) => (
+                      <div key={descIndex} className="profile-experience-description-row">
+                        <input
+                          type="text"
+                          value={desc}
+                          onChange={(e) => handleDescriptionChange(index, descIndex, e.target.value)}
+                          className="profile-edit-input"
+                          placeholder="Description point"
+                        />
+                        <button
+                          className="description-remove-btn"
+                          type="button"
+                          onClick={() => handleRemoveDescriptionPoint(index, descIndex)}
+                          title="Remove description point"
+                          disabled={exp.description.length === 1}
+                        >
+                          <FiX size={14} />
+                        </button>
+                      </div>
+                    ))}
                     <button
-                      className="description-remove-btn"
+                      className="description-add-btn"
                       type="button"
-                      onClick={() => handleRemoveDescriptionPoint(index, descIndex)}
-                      title="Remove description point"
-                      disabled={exp.description.length === 1}
+                      onClick={() => handleAddDescriptionPoint(index)}
                     >
-                      <FiX size={14} />
+                      <FiPlus style={{ marginRight: 4 }} /> Add Description Point
                     </button>
+                    <button
+                      className="experience-remove-btn-wide"
+                      type="button"
+                      onClick={() => handleRemoveExperience(index)}
+                      title="Remove experience"
+                      style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <FiX style={{ marginRight: 6 }} /> Remove Experience
+                    </button>
+                    {/* Separator line above Add Experience */}
+                    {index === profileData.experience.length - 1 && (
+                      <hr className="profile-experience-divider" />
+                    )}
+                    {index === profileData.experience.length - 1 && (
+                      <button
+                        className="experience-add-btn"
+                        type="button"
+                        onClick={handleAddExperience}
+                        style={{ marginTop: 16 }}
+                      >
+                        <FiPlus style={{ marginRight: 4 }} /> Add Experience
+                      </button>
+                    )}
                   </div>
                 ))}
-                <button
-                  className="description-add-btn"
-                  type="button"
-                  onClick={() => handleAddDescriptionPoint(index)}
-                >
-                  <FiPlus style={{ marginRight: 4 }} /> Add Description Point
-                </button>
-                {profileData.experience.length > 1 && (
-                  <button
-                    className="experience-remove-btn-wide"
-                    type="button"
-                    onClick={() => handleRemoveExperience(index)}
-                    title="Remove experience"
-                    style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    <FiX style={{ marginRight: 6 }} /> Remove Experience
-                  </button>
-                )}
               </div>
-            ))}
-            <button
-              className="experience-add-btn"
-              type="button"
-              onClick={handleAddExperience}
-              style={{ marginTop: 8 }}
-            >
-              <FiPlus style={{ marginRight: 4 }} /> Add Experience
-            </button>
+            )}
+            {profileData.experience.length === 0 && (
+              <button
+                className="experience-add-btn"
+                type="button"
+                onClick={handleAddExperience}
+                style={{ marginTop: 8 }}
+              >
+                <FiPlus style={{ marginRight: 4 }} /> Add Experience
+              </button>
+            )}
           </div>
 
           <div className="signup-form-group">
@@ -651,7 +693,6 @@ const SignUpPage = () => {
           role: cleanedProfileData.role || null,
           linkedin: cleanedProfileData.linkedin || null,
           experience: cleanedProfileData.experience || null,
-          // Add other fields as needed
         })
         .eq('id', userId);
       if (profileError) {
@@ -685,10 +726,8 @@ const SignUpPage = () => {
         )}
         {step === 3 && accountData && (
           <ProfileDetailsStep
-            accountType={accountType}
             onBack={() => setStep(2)}
             onComplete={handleProfileComplete}
-            accountData={accountData}
           />
         )}
       </div>

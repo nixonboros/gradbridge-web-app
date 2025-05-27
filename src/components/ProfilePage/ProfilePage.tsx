@@ -509,8 +509,24 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
               </div>
               <div className="profile-card profile-experience">
                 <h4>Experience</h4>
-                {profileData.experience.length === 0 && !editMode && (
-                  <div className="profile-placeholder" style={{ marginBottom: 12 }}>No experience added</div>
+                {editMode && profileData.experience.length === 0 && (
+                  <div className="profile-placeholder" style={{ marginBottom: 12 }}>No experience added yet.</div>
+                )}
+                {editMode && profileData.experience.length === 0 && (
+                  <button
+                    className="experience-add-btn"
+                    onClick={() => handleProfileDataChange('experience', [...profileData.experience, {
+                      role: '',
+                      company: '',
+                      startDate: '',
+                      endDate: '',
+                      currentlyWorking: false,
+                      description: ['']
+                    }])}
+                    style={{ marginBottom: 16 }}
+                  >
+                    <FiPlus style={{ marginRight: 4 }} /> Add Experience
+                  </button>
                 )}
                 {profileData.experience.map((exp, index) => (
                   <div key={index} className="profile-experience-item">
@@ -596,6 +612,25 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                         >
                           <FiX style={{ marginRight: 6 }} /> Remove Experience
                         </button>
+                        {index === profileData.experience.length - 1 && (
+                          <hr className="profile-experience-divider" />
+                        )}
+                        {index === profileData.experience.length - 1 && (
+                          <button
+                            className="experience-add-btn"
+                            onClick={() => handleProfileDataChange('experience', [...profileData.experience, {
+                              role: '',
+                              company: '',
+                              startDate: '',
+                              endDate: '',
+                              currentlyWorking: false,
+                              description: ['']
+                            }])}
+                            style={{ marginTop: 16 }}
+                          >
+                            <FiPlus style={{ marginRight: 4 }} /> Add Experience
+                          </button>
+                        )}
                       </>
                     ) : (
                       <>
@@ -626,90 +661,6 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                     )}
                   </div>
                 ))}
-                {editMode && (
-                  <div className="experience-add-container">
-                    <h5>Add New Experience</h5>
-                    <div className="profile-experience-row">
-                      <input
-                        type="text"
-                        value={newExperience.role}
-                        onChange={(e) => setNewExperience(prev => ({ ...prev, role: e.target.value }))}
-                        className="profile-edit-input"
-                        placeholder="Role"
-                      />
-                      <input
-                        type="text"
-                        value={newExperience.company}
-                        onChange={(e) => setNewExperience(prev => ({ ...prev, company: e.target.value }))}
-                        className="profile-edit-input"
-                        placeholder="Company"
-                      />
-                    </div>
-                    <div className="profile-experience-row">
-                      <input
-                        type="month"
-                        value={newExperience.startDate}
-                        onChange={(e) => setNewExperience(prev => ({ ...prev, startDate: e.target.value }))}
-                        className="profile-edit-input profile-experience-date-input"
-                        placeholder="MM/YYYY"
-                      />
-                      {!newExperience.currentlyWorking && (
-                        <input
-                          type="month"
-                          value={newExperience.endDate}
-                          onChange={(e) => setNewExperience(prev => ({ ...prev, endDate: e.target.value }))}
-                          className="profile-edit-input profile-experience-date-input"
-                          placeholder="MM/YYYY"
-                        />
-                      )}
-                      <label className="profile-experience-checkbox-label" style={{ margin: 0 }}>
-                        <input
-                          type="checkbox"
-                          checked={newExperience.currentlyWorking}
-                          onChange={(e) => setNewExperience(prev => ({ ...prev, currentlyWorking: e.target.checked, endDate: '' }))}
-                          style={{ marginRight: 6 }}
-                        />
-                        Currently Working
-                      </label>
-                    </div>
-                    {newExperience.description.map((desc, descIndex) => (
-                      <div key={descIndex} className="profile-experience-description-row">
-                        <input
-                          type="text"
-                          value={desc}
-                          onChange={(e) => {
-                            const newDesc = [...newExperience.description];
-                            newDesc[descIndex] = e.target.value;
-                            setNewExperience(prev => ({ ...prev, description: newDesc }));
-                          }}
-                          className="profile-edit-input"
-                          placeholder="Description point"
-                        />
-                        <button
-                          className="description-remove-btn"
-                          onClick={() => handleRemoveDescriptionPoint(0, descIndex, true)}
-                          title="Remove description point"
-                          disabled={newExperience.description.length === 1}
-                        >
-                          <FiX size={14} />
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      className="description-add-btn"
-                      onClick={() => handleAddDescriptionPoint(0, true)}
-                    >
-                      <FiPlus style={{ marginRight: 4 }} /> Add Description Point
-                    </button>
-                    <button
-                      className="experience-add-btn"
-                      onClick={handleAddExperience}
-                      style={{ marginTop: 8 }}
-                    >
-                      <FiPlus style={{ marginRight: 4 }} /> Add Experience
-                    </button>
-                  </div>
-                )}
               </div>
             </section>
           </div>
