@@ -19,12 +19,16 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
     return 'Good Evening';
   };
 
+  // Get user's first name from localStorage
+  const fullName = localStorage.getItem('user_name') || 'there';
+  const firstName = fullName.split(' ')[0];
+
   return (
     <div className="home-root">
       <Header onSignOut={onSignOut} />
       <main className="home-main">
         <div className={`home-main-inner fade-init${fadeIn ? ' fade-in' : ''}`}> 
-          <div className="home-greeting">{getGreeting()}, Alexa!</div>
+          <div className="home-greeting">{getGreeting()}, {firstName}!</div>
           {/* Two-column grid: Events, Interview*/}
           <section className="home-section" style={{gridColumn: '1/2'}}>
             <div className="home-section-title">
