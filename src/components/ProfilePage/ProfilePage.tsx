@@ -42,14 +42,6 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
 
   // New state for editing
   const [newSkill, setNewSkill] = useState<string>('');
-  const [newExperience, setNewExperience] = useState<Experience>({
-    role: '',
-    company: '',
-    startDate: '',
-    endDate: '',
-    currentlyWorking: false,
-    description: ['']
-  });
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -203,28 +195,6 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
     } : prev);
   };
 
-  const handleAddExperience = () => {
-    if (!profileData) return;
-    if (newExperience.role && newExperience.company && newExperience.startDate && (newExperience.currentlyWorking || newExperience.endDate)) {
-      setProfileData(prev => prev ? {
-        ...prev,
-        experience: [...prev.experience, {
-          ...newExperience,
-          startDate: newExperience.startDate.slice(0, 7),
-          endDate: newExperience.endDate ? newExperience.endDate.slice(0, 7) : '',
-        }]
-      } : prev);
-      setNewExperience({
-        role: '',
-        company: '',
-        startDate: '',
-        endDate: '',
-        currentlyWorking: false,
-        description: ['']
-      });
-    }
-  };
-
   const handleRemoveExperience = (index: number) => {
     if (!profileData) return;
     setProfileData(prev => prev ? {
@@ -249,12 +219,6 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   // Helper functions for description points
   const handleAddDescriptionPoint = (expIndex: number, isNew = false) => {
     if (isNew) {
-      setNewExperience(prev => ({
-        ...prev,
-        description: [...prev.description, '']
-      }));
-    } else {
-      if (!profileData) return;
       setProfileData(prev => prev ? {
         ...prev,
         experience: prev.experience.map((exp, i) =>
@@ -266,12 +230,6 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
 
   const handleRemoveDescriptionPoint = (expIndex: number, descIndex: number, isNew = false) => {
     if (isNew) {
-      setNewExperience(prev => ({
-        ...prev,
-        description: prev.description.filter((_, i) => i !== descIndex)
-      }));
-    } else {
-      if (!profileData) return;
       setProfileData(prev => prev ? {
         ...prev,
         experience: prev.experience.map((exp, i) =>
