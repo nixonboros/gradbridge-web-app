@@ -56,13 +56,13 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
       setFetching(true);
       setFetchError(null);
       try {
-        // TODO: Replace with real user id from auth/session
-        const userId = localStorage.getItem('user_id');
-        if (!userId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
           setFetchError('User not logged in.');
           setFetching(false);
           return;
         }
+        const userId = user.id;
         // Fetch profile from profiles table
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
@@ -75,19 +75,19 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           return;
         }
         // Fetch user info from users table
-        const { data: user, error: userError } = await supabase
+        const { data: userInfo, error: userError } = await supabase
           .from('users')
           .select('full_name, email')
           .eq('id', userId)
           .single();
-        if (userError || !user) {
+        if (userError || !userInfo) {
           setFetchError('Failed to fetch user info.');
           setFetching(false);
           return;
         }
         setProfileData({
-          name: user.full_name,
-          email: user.email,
+          name: userInfo.full_name || '',
+          email: userInfo.email || '',
           age: profile.age !== undefined && profile.age !== null ? String(profile.age) : '',
           location: profile.location || '',
           role: profile.role || '',
@@ -113,18 +113,17 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      const userId = localStorage.getItem('user_id');
-      if (!userId || !profileData) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !profileData) {
         setIsLoading(false);
         return;
       }
-  
+      const userId = user.id;
       // Update users table (for name)
       const { error: userError } = await supabase
         .from('users')
         .update({ full_name: profileData.name })
         .eq('id', userId);
-  
       // Update profiles table (for profile info)
       const { error: profileError } = await supabase
         .from('profiles')
@@ -140,14 +139,12 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           // profile_picture_url: null, // ignore for now
         })
         .eq('id', userId);
-  
       if (userError || profileError) {
         // handle error (show message, etc)
         alert('Failed to update profile. Please try again.');
         setIsLoading(false);
         return;
       }
-  
       setEditMode(false);
       navigate('/profile');
     } finally {

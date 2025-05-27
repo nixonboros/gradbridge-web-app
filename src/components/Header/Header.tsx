@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import NotificationPanel from '../NotificationPanel/NotificationPanel';
+import { supabase } from '../../lib/supabase';
 
 interface HeaderProps {
   onSignOut?: () => void;
@@ -16,12 +17,17 @@ interface HeaderProps {
 
 // Helper to get avatar initial from name
 function getAvatarInitial() {
-  // Try to get the user's name from localStorage (set after login/signup)
-  const name = localStorage.getItem('user_name');
-  if (name && name.trim().length > 0) {
-    return name.trim().split(' ')[0][0].toUpperCase();
-  }
-  return '#';
+  const [initial, setInitial] = useState('#');
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && user.user_metadata?.full_name) {
+        setInitial(user.user_metadata.full_name.trim().split(' ')[0][0].toUpperCase());
+      }
+    };
+    fetchUser();
+  }, []);
+  return initial;
 }
 
 const Header = ({

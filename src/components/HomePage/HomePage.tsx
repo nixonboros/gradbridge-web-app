@@ -3,6 +3,7 @@ import './HomePage.css';
 import { FiCalendar, FiMapPin, FiClock, FiChevronRight, FiUsers } from 'react-icons/fi';
 import Header from '../Header/Header';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 
 type HomePageProps = {
   onSignOut: () => void;
@@ -10,6 +11,16 @@ type HomePageProps = {
 
 const HomePage = ({ onSignOut }: HomePageProps) => {
   const [fadeIn, setFadeIn] = useState(false);
+  const [firstName, setFirstName] = useState('there');
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && user.user_metadata?.full_name) {
+        setFirstName(user.user_metadata.full_name.split(' ')[0]);
+      }
+    };
+    fetchUser();
+  }, []);
   useEffect(() => { setFadeIn(true); }, []);
 
   const getGreeting = () => {
@@ -18,10 +29,6 @@ const HomePage = ({ onSignOut }: HomePageProps) => {
     if (hour < 18) return 'Good Afternoon';
     return 'Good Evening';
   };
-
-  // Get user's first name from localStorage
-  const fullName = localStorage.getItem('user_name') || 'there';
-  const firstName = fullName.split(' ')[0];
 
   return (
     <div className="home-root">

@@ -10,6 +10,7 @@ import SplashScreen from './components/SplashScreen/SplashScreen';
 import SignUpPage from './components/SignUpPage/SignUpPage';
 import ProfilePage from './components/ProfilePage/ProfilePage';
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
+import { supabase } from './lib/supabase';
 
 interface ProfileRouteProps {
   onSignOut: () => void;
@@ -29,7 +30,14 @@ function ProfileRoute({ onSignOut }: ProfileRouteProps) {
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(() => localStorage.getItem('loggedIn') === 'true');
+  const [loggedIn, setLoggedIn] = useState(false);
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setLoggedIn(!!session);
+    };
+    checkSession();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 1400);
@@ -38,12 +46,10 @@ function App() {
 
   const handleLogin = () => {
     setLoggedIn(true);
-    localStorage.setItem('loggedIn', 'true');
   };
 
   const handleSignOut = () => {
     setLoggedIn(false);
-    localStorage.removeItem('loggedIn');
   };
 
   if (showSplash) return <SplashScreen />;

@@ -51,9 +51,6 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
         setIsLoading(false);
         return;
       }
-      // Store user info in localStorage
-      localStorage.setItem('user_id', data.user.id);
-      localStorage.setItem('user_name', data.user.user_metadata?.full_name || '');
       onLogin();
       navigate('/home');
     } catch (err) {
