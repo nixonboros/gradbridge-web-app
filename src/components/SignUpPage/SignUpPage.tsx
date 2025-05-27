@@ -56,6 +56,15 @@ const ACCOUNT_TYPES = [
   { key: 'company' as AccountType, label: 'Company', icon: IconCompany },
 ];
 
+// TODO: To enable company accounts, follow these steps:
+// 1. In the AccountTypeStep component below, remove the isCompany check from:
+//    - The onClick handler: onClick={() => !isCompany && onSelect(...)}
+//    - The disabled prop: disabled={isCompany}
+//    - The disabled class: ${isCompany ? ' disabled' : ''}
+// 2. Remove the title prop that shows the "coming soon" tooltip
+// 3. The company account functionality is already implemented in the backend,
+//    so no additional changes are needed to make it work
+
 // Account Type Selection Step
 function AccountTypeStep({ selectedType, onSelect, onNext, onBack }: {
   selectedType: AccountType;
@@ -72,12 +81,15 @@ function AccountTypeStep({ selectedType, onSelect, onNext, onBack }: {
       <div className="signup-type-options">
         {ACCOUNT_TYPES.map(type => {
           const Icon = type.icon;
+          const isCompany = type.key === 'company';
           return (
             <button
               key={type.key}
-              className={`signup-type-btn${selectedType === type.key ? ' selected' : ''}`}
-              onClick={() => onSelect(selectedType === type.key ? '' : type.key)}
+              className={`signup-type-btn${selectedType === type.key ? ' selected' : ''}${isCompany ? ' disabled' : ''}`}
+              onClick={() => !isCompany && onSelect(selectedType === type.key ? '' : type.key)}
               type="button"
+              disabled={isCompany}
+              title={isCompany ? "Company accounts are coming soon!" : undefined}
             >
               <span className="signup-type-icon">
                 <Icon selected={selectedType === type.key} />
