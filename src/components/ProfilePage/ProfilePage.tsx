@@ -74,20 +74,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           setFetching(false);
           return;
         }
-        // Fetch user info from users table
-        const { data: userInfo, error: userError } = await supabase
-          .from('users')
-          .select('full_name, email')
-          .eq('id', userId)
-          .single();
-        if (userError || !userInfo) {
-          setFetchError('Failed to fetch user info.');
-          setFetching(false);
-          return;
-        }
         setProfileData({
-          name: userInfo.full_name || '',
-          email: userInfo.email || '',
+          name: user.user_metadata?.full_name || '',
+          email: user.email || '',
           age: profile.age !== undefined && profile.age !== null ? String(profile.age) : '',
           location: profile.location || '',
           role: profile.role || '',
@@ -119,11 +108,10 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         return;
       }
       const userId = user.id;
-      // Update users table (for name)
-      const { error: userError } = await supabase
-        .from('users')
-        .update({ full_name: profileData.name })
-        .eq('id', userId);
+      // Update user metadata in Supabase Auth
+      const { error: userError } = await supabase.auth.updateUser({
+        data: { full_name: profileData.name }
+      });
       // Update profiles table (for profile info)
       const { error: profileError } = await supabase
         .from('profiles')
