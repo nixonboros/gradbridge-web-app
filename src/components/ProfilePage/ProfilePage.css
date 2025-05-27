@@ -225,22 +225,21 @@
 }
 
 .profile-experience-role {
-  font-weight: 700;
-  color: #1e293b;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
 }
 
 .profile-experience-dates {
-  color: #64748b;
-  font-size: 0.98rem;
+  color: #4b5563;
+  font-size: 1rem;
   font-weight: 500;
 }
 
 .profile-experience-company {
-  color: #64748b;
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 4px;
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-bottom: 8px;
 }
 
 .profile-experience-item ul {
@@ -714,4 +713,11 @@
 .profile-sidebar > .profile-card {
   min-width: 320px;
   width: 340px;
+}
+
+.profile-experience-header h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
 }
