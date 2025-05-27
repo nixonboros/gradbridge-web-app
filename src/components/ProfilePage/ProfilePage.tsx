@@ -37,6 +37,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   const [isLoading, setIsLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
 
   // New state for editing
@@ -49,6 +50,14 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
     currentlyWorking: false,
     description: ['']
   });
+
+  // Clear error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   // Fetch user and profile data from Supabase on mount
   useEffect(() => {
@@ -129,8 +138,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         })
         .eq('id', userId);
       if (userError || profileError) {
-        // handle error (show message, etc)
-        alert('Failed to update profile. Please try again.');
+        setError('Failed to update profile. Please try again.');
         setIsLoading(false);
         return;
       }
@@ -303,6 +311,11 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
       <Header onSignOut={onSignOut} />
       <main className="profile-main">
         <div className="profile-main-inner fade-init fade-in">
+          {error && (
+            <div className="login-error" style={{ marginBottom: '1rem' }}>
+              {error}
+            </div>
+          )}
           <section className="profile-header">
             <div className="profile-header-main">
               <div className="profile-header-left">

@@ -39,7 +39,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
       });
       if (signInError) {
         if (signInError.message.toLowerCase().includes('invalid login credentials')) {
-          setError('Incorrect email or password. Please check your credentials and try again.');
+          setError('Incorrect email or password. Please try again.');
         } else {
           setError(`Login failed: ${signInError.message}`);
         }
