@@ -490,7 +490,7 @@ function ProfileDetailsStep({ onBack, onComplete }: {
             <label className="signup-input-label">Experience (Optional)</label>
             {profileData.experience.length === 0 && (
               <div style={{ marginBottom: 8, color: '#64748b', fontStyle: 'italic' }}>
-                No experience added yet.
+                No experience added
               </div>
             )}
             {profileData.experience.length > 0 && (

@@ -467,8 +467,8 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
               </div>
               <div className="profile-card profile-experience">
                 <h4>Experience</h4>
-                {editMode && profileData.experience.length === 0 && (
-                  <div className="profile-placeholder" style={{ marginBottom: 12 }}>No experience added yet.</div>
+                {profileData.experience.length === 0 && (
+                  <div className="profile-placeholder" style={{ marginBottom: 12 }}>No experience added</div>
                 )}
                 {editMode && profileData.experience.length === 0 && (
                   <button
