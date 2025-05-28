@@ -1,7 +1,7 @@
 import './ProfilePage.css';
 import Header from '../Header/Header';
-import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload, FiUpload, FiFileText, FiEdit2, FiPlus, FiX } from 'react-icons/fi';
-import { useState, useEffect } from 'react';
+import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload, FiUpload, FiFileText, FiEdit2, FiPlus, FiX, FiCamera } from 'react-icons/fi';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
@@ -39,9 +39,12 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
 
   // New state for editing
   const [newSkill, setNewSkill] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const resumeInputRef = useRef<HTMLInputElement>(null);
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -277,12 +280,32 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           <section className="profile-header">
             <div className="profile-header-main">
               <div className="profile-header-left">
-                <div className="profile-avatar">
+                <div 
+                  className="profile-avatar"
+                  onMouseEnter={() => setIsHoveringAvatar(true)}
+                  onMouseLeave={() => setIsHoveringAvatar(false)}
+                  onClick={() => editMode && fileInputRef.current?.click()}
+                  style={{ cursor: editMode ? 'pointer' : 'default' }}
+                >
                   {
                     profileData.name && profileData.name.trim().length > 0
                       ? profileData.name.trim().split(' ')[0][0].toUpperCase()
                       : '#'
                   }
+                  {editMode && isHoveringAvatar && (
+                    <div className="profile-avatar-overlay">
+                      <FiCamera color="white" size={24} />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    accept="image/*"
+                    onChange={(e) => {
+                      // Handle file upload here
+                    }}
+                  />
                 </div>
                 <div>
                   {editMode ? (
@@ -435,10 +458,22 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
               <div className="profile-card profile-resume">
                 <div className="profile-resume-header">
                   <h4>Resume/CV</h4>
-                  <button className="profile-upload-btn">
+                  <button 
+                    className="profile-upload-btn"
+                    onClick={() => resumeInputRef.current?.click()}
+                  >
                     <FiUpload style={{ fontSize: '1.1em', marginRight: 4 }} />
                     Upload New
                   </button>
+                  <input
+                    type="file"
+                    ref={resumeInputRef}
+                    style={{ display: 'none' }}
+                    accept=".pdf,.doc,.docx"
+                    onChange={(e) => {
+                      // Handle resume upload here
+                    }}
+                  />
                 </div>
                 <div className="profile-resume-file">
                   <FiFileText className="profile-resume-fileicon" />
