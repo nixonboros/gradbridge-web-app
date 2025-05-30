@@ -49,6 +49,10 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   const fileInputRef = useRef<HTMLInputElement>(null);
   const resumeInputRef = useRef<HTMLInputElement>(null);
 
+  // New state for resume view
+  const [isViewingResume, setIsViewingResume] = useState(false);
+  const [resumeViewUrl, setResumeViewUrl] = useState<string | null>(null);
+
   // Clear error after 5 seconds
   useEffect(() => {
     if (error) {
@@ -248,6 +252,37 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           i === expIndex ? { ...exp, description: exp.description.filter((_, j) => j !== descIndex) } : exp
         )
       } : prev);
+    }
+  };
+
+  const handleViewResume = async () => {
+    if (!profileData || !profileData.resume_url) return;
+    
+    try {
+      // Get the file path from the URL
+      const filePath = profileData.resume_url.split('/').pop();
+      if (!filePath) return;
+
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Create a signed URL that expires in 60 seconds
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+        .from('resumes')
+        .createSignedUrl(`${user.id}/${filePath}`, 60);
+
+      if (signedUrlError) {
+        console.error('Error creating signed URL:', signedUrlError);
+        setError('Failed to view resume');
+        return;
+      }
+
+      setResumeViewUrl(signedUrlData.signedUrl);
+      setIsViewingResume(true);
+    } catch (err) {
+      console.error('Error viewing resume:', err);
+      setError('Failed to view resume');
     }
   };
 
@@ -577,7 +612,10 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                       </span>
                     </div>
                     <div className="profile-resume-actions">
-                      <button className="profile-resume-view"><FiEye /></button>
+                      <button 
+                        className="profile-resume-view"
+                        onClick={handleViewResume}
+                      ><FiEye /></button>
                       <button 
                         className="profile-resume-download"
                         onClick={async () => {
@@ -635,6 +673,33 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                   <div className="profile-placeholder">No resume uploaded</div>
                 )}
               </div>
+
+              {/* Resume View Modal */}
+              {isViewingResume && resumeViewUrl && (
+                <div className="resume-modal-overlay" onClick={() => setIsViewingResume(false)}>
+                  <div className="resume-modal" onClick={e => e.stopPropagation()}>
+                    <div className="resume-modal-header">
+                      <h3>Resume Preview</h3>
+                      <button 
+                        className="resume-modal-close"
+                        onClick={() => setIsViewingResume(false)}
+                      >
+                        <FiX size={24} />
+                      </button>
+                    </div>
+                    <div className="resume-modal-content">
+                      <iframe
+                        src={resumeViewUrl}
+                        title="Resume Preview"
+                        width="100%"
+                        height="100%"
+                        style={{ border: 'none' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="profile-card profile-about">
                 <h4>About Me</h4>
                 {editMode ? (
