@@ -578,7 +578,57 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                     </div>
                     <div className="profile-resume-actions">
                       <button className="profile-resume-view"><FiEye /></button>
-                      <button className="profile-resume-download"><FiDownload /></button>
+                      <button 
+                        className="profile-resume-download"
+                        onClick={async () => {
+                          if (profileData.resume_url) {
+                            try {
+                              // Get the file path from the URL
+                              const filePath = profileData.resume_url.split('/').pop();
+                              if (!filePath) return;
+
+                              // Get the current user
+                              const { data: { user } } = await supabase.auth.getUser();
+                              if (!user) return;
+
+                              // Create a signed URL that expires in 60 seconds
+                              const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+                                .from('resumes')
+                                .createSignedUrl(`${user.id}/${filePath}`, 60);
+
+                              if (signedUrlError) {
+                                console.error('Error creating signed URL:', signedUrlError);
+                                setError('Failed to download resume');
+                                return;
+                              }
+
+                              // Fetch the file
+                              const response = await fetch(signedUrlData.signedUrl);
+                              const blob = await response.blob();
+                              
+                              // Create a blob URL
+                              const blobUrl = window.URL.createObjectURL(blob);
+                              
+                              // Create a temporary anchor element
+                              const link = document.createElement('a');
+                              link.style.display = 'none';
+                              link.href = blobUrl;
+                              link.download = filePath;
+                              
+                              // Append to body, click, and remove
+                              document.body.appendChild(link);
+                              link.click();
+                              
+                              // Clean up
+                              window.URL.revokeObjectURL(blobUrl);
+                              document.body.removeChild(link);
+                            } catch (err) {
+                              console.error('Error downloading resume:', err);
+                              setError('Failed to download resume');
+                            }
+                          }
+                        }}
+                      ><FiDownload /></button>
                     </div>
                   </div>
                 ) : (
