@@ -692,7 +692,45 @@ const SignUpPage = () => {
       }
       const userId = data.user.id;
 
-      // 2. Update the existing profile row with all user info
+      // 2. Upload files if they exist
+      let resumeUrl = null;
+      let profilePictureUrl = null;
+
+      if (profileData.resume) {
+        const resumeFileName = `${userId}/${profileData.resume.name}`;
+        const { error: resumeError } = await supabase.storage
+          .from('resumes')
+          .upload(resumeFileName, profileData.resume);
+        
+        if (resumeError) {
+          throw new Error(`Failed to upload resume: ${resumeError.message}`);
+        }
+
+        const { data: resumeData } = supabase.storage
+          .from('resumes')
+          .getPublicUrl(resumeFileName);
+        
+        resumeUrl = resumeData.publicUrl;
+      }
+
+      if (profileData.profilePicture) {
+        const profilePictureFileName = `${userId}/${profileData.profilePicture.name}`;
+        const { error: profileError } = await supabase.storage
+          .from('profile-avatars')
+          .upload(profilePictureFileName, profileData.profilePicture);
+        
+        if (profileError) {
+          throw new Error(`Failed to upload profile picture: ${profileError.message}`);
+        }
+
+        const { data: avatarData } = supabase.storage
+          .from('profile-avatars')
+          .getPublicUrl(profilePictureFileName);
+        
+        profilePictureUrl = avatarData.publicUrl;
+      }
+
+      // 3. Update the existing profile row with all user info
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
@@ -703,6 +741,8 @@ const SignUpPage = () => {
           role: cleanedProfileData.role || null,
           linkedin: cleanedProfileData.linkedin || null,
           experience: cleanedProfileData.experience || null,
+          resume_url: resumeUrl,
+          profile_picture_url: profilePictureUrl
         })
         .eq('id', userId);
       if (profileError) {
