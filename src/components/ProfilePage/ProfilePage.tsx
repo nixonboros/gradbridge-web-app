@@ -24,6 +24,9 @@ interface ProfileData {
   about: string;
   skills: string[];
   experience: Experience[];
+  resume_url: string | null;
+  profile_picture_url: string | null;
+  resume_uploaded_at?: string | null;
 }
 
 interface ProfilePageProps {
@@ -70,7 +73,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         // Fetch profile from profiles table
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('age, location, role, linkedin, experience, resume_url, profile_picture_url, id, about, skills')
+          .select('age, location, role, linkedin, experience, resume_url, resume_uploaded_at, profile_picture_url, id, about, skills')
           .eq('id', userId)
           .single();
         if (profileError || !profile) {
@@ -88,6 +91,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           about: profile.about || '',
           skills: profile.skills || [],
           experience: profile.experience || [],
+          resume_url: profile.resume_url || null,
+          profile_picture_url: profile.profile_picture_url || null,
+          resume_uploaded_at: profile.resume_uploaded_at || null
         });
       } catch (err) {
         setFetchError('An error occurred while fetching profile.');
@@ -157,6 +163,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         about: profileData.about,
         skills: profileData.skills,
         experience: profileData.experience,
+        resume_url: profileData.resume_url,
+        profile_picture_url: profileData.profile_picture_url,
+        resume_uploaded_at: profileData.resume_uploaded_at
       });
     }
     setEditMode(false);
@@ -285,13 +294,27 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                   onMouseEnter={() => setIsHoveringAvatar(true)}
                   onMouseLeave={() => setIsHoveringAvatar(false)}
                   onClick={() => editMode && fileInputRef.current?.click()}
-                  style={{ cursor: editMode ? 'pointer' : 'default' }}
+                  style={{ 
+                    cursor: editMode ? 'pointer' : 'default',
+                    background: profileData.profile_picture_url ? 'none' : '#2563eb'
+                  }}
                 >
-                  {
+                  {profileData.profile_picture_url ? (
+                    <img 
+                      src={profileData.profile_picture_url} 
+                      alt="Profile" 
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',
+                        borderRadius: '20px'
+                      }} 
+                    />
+                  ) : (
                     profileData.name && profileData.name.trim().length > 0
                       ? profileData.name.trim().split(' ')[0][0].toUpperCase()
                       : '#'
-                  }
+                  )}
                   {editMode && isHoveringAvatar && (
                     <div className="profile-avatar-overlay">
                       <FiCamera color="white" size={24} />
@@ -302,8 +325,40 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                     ref={fileInputRef}
                     style={{ display: 'none' }}
                     accept="image/*"
-                    onChange={(e) => {
-                      // Handle file upload here
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      
+                      try {
+                        const { data: { user } } = await supabase.auth.getUser();
+                        if (!user) return;
+                        
+                        const fileName = `${user.id}/${file.name}`;
+                        const { error: uploadError } = await supabase.storage
+                          .from('profile-avatars')
+                          .upload(fileName, file, { upsert: true });
+                        
+                        if (uploadError) throw uploadError;
+                        
+                        const { data: urlData } = supabase.storage
+                          .from('profile-avatars')
+                          .getPublicUrl(fileName);
+                        
+                        await supabase
+                          .from('profiles')
+                          .update({
+                            profile_picture_url: urlData.publicUrl
+                          })
+                          .eq('id', user.id);
+
+                        setProfileData(prev => prev ? {
+                          ...prev,
+                          profile_picture_url: urlData.publicUrl
+                        } : prev);
+                      } catch (err) {
+                        console.error('Error uploading profile picture:', err);
+                        setError('Failed to upload profile picture');
+                      }
                     }}
                   />
                 </div>
@@ -470,22 +525,65 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                     ref={resumeInputRef}
                     style={{ display: 'none' }}
                     accept=".pdf,.doc,.docx"
-                    onChange={(e) => {
-                      // Handle resume upload here
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      
+                      try {
+                        const { data: { user } } = await supabase.auth.getUser();
+                        if (!user) return;
+                        
+                        const fileName = `${user.id}/${file.name}`;
+                        const { error: uploadError } = await supabase.storage
+                          .from('resumes')
+                          .upload(fileName, file, { upsert: true });
+                        
+                        if (uploadError) throw uploadError;
+                        
+                        const { data: urlData } = supabase.storage
+                          .from('resumes')
+                          .getPublicUrl(fileName);
+                        
+                        const now = new Date().toISOString();
+                        await supabase
+                          .from('profiles')
+                          .update({
+                            resume_url: urlData.publicUrl,
+                            resume_uploaded_at: now
+                          })
+                          .eq('id', user.id);
+
+                        setProfileData(prev => prev ? {
+                          ...prev,
+                          resume_url: urlData.publicUrl,
+                          resume_uploaded_at: now
+                        } : prev);
+                      } catch (err) {
+                        console.error('Error uploading resume:', err);
+                        setError('Failed to upload resume');
+                      }
                     }}
                   />
                 </div>
-                <div className="profile-resume-file">
-                  <FiFileText className="profile-resume-fileicon" />
-                  <div>
-                    <span className="profile-resume-filename">Alexa_Resume_2024.pdf</span>
-                    <span className="profile-resume-date">Uploaded on Jan 15, 2024</span>
+                {profileData.resume_url ? (
+                  <div className="profile-resume-file">
+                    <FiFileText className="profile-resume-fileicon" />
+                    <div>
+                      <span className="profile-resume-filename">
+                        {profileData.resume_url.split('/').pop()}
+                      </span>
+                      <span className="profile-resume-date">
+                        Uploaded{profileData.resume_uploaded_at ? ` on ${new Date(profileData.resume_uploaded_at).toLocaleDateString()}` : ''}
+                      </span>
+                    </div>
+                    <div className="profile-resume-actions">
+                      <button className="profile-resume-view"><FiEye /></button>
+                      <button className="profile-resume-download"><FiDownload /></button>
+                    </div>
                   </div>
-                  <div className="profile-resume-actions">
-                    <button className="profile-resume-view"><FiEye /></button>
-                    <button className="profile-resume-download"><FiDownload /></button>
-                  </div>
-                </div>
+                ) : (
+                  <div className="profile-placeholder">No resume uploaded</div>
+                )}
               </div>
               <div className="profile-card profile-about">
                 <h4>About Me</h4>

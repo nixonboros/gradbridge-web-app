@@ -18,16 +18,32 @@ interface HeaderProps {
 // Helper to get avatar initial from name
 function getAvatarInitial() {
   const [initial, setInitial] = useState('#');
+  const [profilePicture, setProfilePicture] = useState<string | undefined>(undefined);
+
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user && user.user_metadata?.full_name) {
-        setInitial(user.user_metadata.full_name.trim().split(' ')[0][0].toUpperCase());
+      if (user) {
+        if (user.user_metadata?.full_name) {
+          setInitial(user.user_metadata.full_name.trim().split(' ')[0][0].toUpperCase());
+        }
+        
+        // Fetch profile picture URL
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('profile_picture_url')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile?.profile_picture_url) {
+          setProfilePicture(profile.profile_picture_url);
+        }
       }
     };
     fetchUser();
   }, []);
-  return initial;
+
+  return { initial, profilePicture };
 }
 
 const Header = ({
@@ -119,9 +135,25 @@ const Header = ({
                 ref={avatarRef}
                 onClick={() => setDropdownOpen((open) => !open)}
                 tabIndex={0}
-                style={{ position: 'relative' }}
+                style={{ 
+                  position: 'relative',
+                  background: getAvatarInitial().profilePicture ? 'none' : '#2563eb'
+                }}
               >
-                {getAvatarInitial()}
+                {getAvatarInitial().profilePicture ? (
+                  <img 
+                    src={getAvatarInitial().profilePicture} 
+                    alt="Profile" 
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover',
+                      borderRadius: '12px'
+                    }} 
+                  />
+                ) : (
+                  getAvatarInitial().initial
+                )}
                 {dropdownOpen && (
                   <div className="profile-dropdown">
                     <button className="dropdown-item" onClick={handleProfile} type="button">
