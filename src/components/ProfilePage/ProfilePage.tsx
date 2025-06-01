@@ -368,16 +368,32 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                         const { data: { user } } = await supabase.auth.getUser();
                         if (!user) return;
                         
-                        const fileName = `${user.id}/${file.name}`;
+                        // First, delete any existing profile picture
+                        if (profileData.profile_picture_url) {
+                          const oldFilePath = profileData.profile_picture_url.split('/').pop();
+                          if (oldFilePath) {
+                            await supabase.storage
+                              .from('profile-avatars')
+                              .remove([`${user.id}/${oldFilePath}`]);
+                          }
+                        }
+                        
+                        // Generate a unique filename using timestamp
+                        const timestamp = new Date().getTime();
+                        const fileExtension = file.name.split('.').pop();
+                        const uniqueFileName = `avatar_${timestamp}.${fileExtension}`;
+                        const filePath = `${user.id}/${uniqueFileName}`;
+                        
+                        // Upload the new file
                         const { error: uploadError } = await supabase.storage
                           .from('profile-avatars')
-                          .upload(fileName, file, { upsert: true });
+                          .upload(filePath, file);
                         
                         if (uploadError) throw uploadError;
                         
                         const { data: urlData } = supabase.storage
                           .from('profile-avatars')
-                          .getPublicUrl(fileName);
+                          .getPublicUrl(filePath);
                         
                         await supabase
                           .from('profiles')
