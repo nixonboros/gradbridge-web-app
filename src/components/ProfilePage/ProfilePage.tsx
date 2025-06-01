@@ -584,17 +584,35 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                         const { data: { user } } = await supabase.auth.getUser();
                         if (!user) return;
                         
-                        const fileName = `${user.id}/${file.name}`;
+                        const folderPath = `${user.id}/`;
+
+                        // 1. List all existing resumes for the user
+                        const { data: listData, error: listError } = await supabase
+                          .storage
+                          .from('resumes')
+                          .list(folderPath);
+
+                        if (listError) throw listError;
+
+                        // 2. Delete all existing resumes for the user
+                        if (listData && listData.length > 0) {
+                          const filesToDelete = listData.map(fileObj => `${user.id}/${fileObj.name}`);
+                          await supabase.storage.from('resumes').remove(filesToDelete);
+                        }
+
+                        // 3. Upload the new resume with the original file name
+                        const filePath = `${user.id}/${file.name}`;
                         const { error: uploadError } = await supabase.storage
                           .from('resumes')
-                          .upload(fileName, file, { upsert: true });
-                        
+                          .upload(filePath, file);
+
                         if (uploadError) throw uploadError;
-                        
+
+                        // 4. Get the public URL and update the profile
                         const { data: urlData } = supabase.storage
                           .from('resumes')
-                          .getPublicUrl(fileName);
-                        
+                          .getPublicUrl(filePath);
+
                         const now = new Date().toISOString();
                         await supabase
                           .from('profiles')
