@@ -4,6 +4,7 @@ import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload, FiUpload,
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useUser } from '../../contexts/UserContext';
 
 interface Experience {
   role: string;
@@ -52,6 +53,8 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   // New state for resume view
   const [isViewingResume, setIsViewingResume] = useState(false);
   const [resumeViewUrl, setResumeViewUrl] = useState<string | null>(null);
+
+  const { setProfilePicture } = useUser();
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -286,6 +289,58 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
     }
   };
 
+  const handleProfilePictureUpload = async (file: File) => {
+    if (!profileData) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      // First, delete any existing profile picture
+      if (profileData.profile_picture_url) {
+        const oldFilePath = profileData.profile_picture_url.split('/').pop();
+        if (oldFilePath) {
+          await supabase.storage
+            .from('profile-avatars')
+            .remove([`${user.id}/${oldFilePath}`]);
+        }
+      }
+      
+      // Generate a unique filename using timestamp
+      const timestamp = new Date().getTime();
+      const fileExtension = file.name.split('.').pop();
+      const uniqueFileName = `avatar_${timestamp}.${fileExtension}`;
+      const filePath = `${user.id}/${uniqueFileName}`;
+      
+      // Upload the new file
+      const { error: uploadError } = await supabase.storage
+        .from('profile-avatars')
+        .upload(filePath, file);
+      
+      if (uploadError) throw uploadError;
+      
+      const { data: urlData } = supabase.storage
+        .from('profile-avatars')
+        .getPublicUrl(filePath);
+      
+      await supabase
+        .from('profiles')
+        .update({
+          profile_picture_url: urlData.publicUrl
+        })
+        .eq('id', user.id);
+
+      setProfilePicture(urlData.publicUrl);
+      setProfileData(prev => prev ? {
+        ...prev,
+        profile_picture_url: urlData.publicUrl
+      } : prev);
+    } catch (err) {
+      console.error('Error uploading profile picture:', err);
+      setError('Failed to upload profile picture');
+    }
+  };
+
   if (fetching) {
     return (
       <div className="profile-root">
@@ -363,53 +418,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                     onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      
-                      try {
-                        const { data: { user } } = await supabase.auth.getUser();
-                        if (!user) return;
-                        
-                        // First, delete any existing profile picture
-                        if (profileData.profile_picture_url) {
-                          const oldFilePath = profileData.profile_picture_url.split('/').pop();
-                          if (oldFilePath) {
-                            await supabase.storage
-                              .from('profile-avatars')
-                              .remove([`${user.id}/${oldFilePath}`]);
-                          }
-                        }
-                        
-                        // Generate a unique filename using timestamp
-                        const timestamp = new Date().getTime();
-                        const fileExtension = file.name.split('.').pop();
-                        const uniqueFileName = `avatar_${timestamp}.${fileExtension}`;
-                        const filePath = `${user.id}/${uniqueFileName}`;
-                        
-                        // Upload the new file
-                        const { error: uploadError } = await supabase.storage
-                          .from('profile-avatars')
-                          .upload(filePath, file);
-                        
-                        if (uploadError) throw uploadError;
-                        
-                        const { data: urlData } = supabase.storage
-                          .from('profile-avatars')
-                          .getPublicUrl(filePath);
-                        
-                        await supabase
-                          .from('profiles')
-                          .update({
-                            profile_picture_url: urlData.publicUrl
-                          })
-                          .eq('id', user.id);
-
-                        setProfileData(prev => prev ? {
-                          ...prev,
-                          profile_picture_url: urlData.publicUrl
-                        } : prev);
-                      } catch (err) {
-                        console.error('Error uploading profile picture:', err);
-                        setError('Failed to upload profile picture');
-                      }
+                      await handleProfilePictureUpload(file);
                     }}
                   />
                 </div>

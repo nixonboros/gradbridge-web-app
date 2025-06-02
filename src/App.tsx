@@ -11,6 +11,7 @@ import SignUpPage from './components/SignUpPage/SignUpPage';
 import ProfilePage from './components/ProfilePage/ProfilePage';
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { supabase } from './lib/supabase';
+import { UserProvider } from './contexts/UserContext';
 
 interface ProfileRouteProps {
   onSignOut: () => void;
@@ -55,34 +56,36 @@ function App() {
   if (showSplash) return <SplashScreen />;
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage loggedIn={loggedIn} onSignOut={() => {
-          handleSignOut();
-          window.location.href = '/login';
-        }} />} />
-        <Route path="/login" element={
-          loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={handleLogin} />
-        } />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/home" element={
-          loggedIn ? <HomePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
-        } />
-        <Route path="/events" element={
-          loggedIn ? <EventsPage onSignOut={handleSignOut} /> : <Navigate to="/login" />
-        } />
-        <Route path="/resume" element={
-          loggedIn ? <ResumePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
-        } />
-        <Route path="/interview" element={
-          loggedIn ? <InterviewPage onSignOut={handleSignOut} /> : <Navigate to="/login" />
-        } />
-        <Route path="/profile" element={
-          loggedIn ? <ProfileRoute onSignOut={handleSignOut} /> : <Navigate to="/login" />
-        } />
-        <Route path="*" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
-      </Routes>
-    </BrowserRouter>
+    <UserProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage loggedIn={loggedIn} onSignOut={() => {
+            handleSignOut();
+            window.location.href = '/login';
+          }} />} />
+          <Route path="/login" element={
+            loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={handleLogin} />
+          } />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/home" element={
+            loggedIn ? <HomePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
+          } />
+          <Route path="/events" element={
+            loggedIn ? <EventsPage onSignOut={handleSignOut} /> : <Navigate to="/login" />
+          } />
+          <Route path="/resume" element={
+            loggedIn ? <ResumePage onSignOut={handleSignOut} /> : <Navigate to="/login" />
+          } />
+          <Route path="/interview" element={
+            loggedIn ? <InterviewPage onSignOut={handleSignOut} /> : <Navigate to="/login" />
+          } />
+          <Route path="/profile" element={
+            loggedIn ? <ProfileRoute onSignOut={handleSignOut} /> : <Navigate to="/login" />
+          } />
+          <Route path="*" element={<Navigate to={loggedIn ? "/home" : "/login"} />} />
+        </Routes>
+      </BrowserRouter>
+    </UserProvider>
   );
 }
 

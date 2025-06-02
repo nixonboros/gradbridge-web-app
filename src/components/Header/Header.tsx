@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import NotificationPanel from '../NotificationPanel/NotificationPanel';
-import { supabase } from '../../lib/supabase';
+import { useUser } from '../../contexts/UserContext';
 
 interface HeaderProps {
   onSignOut?: () => void;
@@ -13,37 +13,6 @@ interface HeaderProps {
   showNotification?: boolean;
   showAvatar?: boolean;
   rightButton?: ReactNode;
-}
-
-// Helper to get avatar initial from name
-function getAvatarInitial() {
-  const [initial, setInitial] = useState('#');
-  const [profilePicture, setProfilePicture] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        if (user.user_metadata?.full_name) {
-          setInitial(user.user_metadata.full_name.trim().split(' ')[0][0].toUpperCase());
-        }
-        
-        // Fetch profile picture URL
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('profile_picture_url')
-          .eq('id', user.id)
-          .single();
-        
-        if (profile?.profile_picture_url) {
-          setProfilePicture(profile.profile_picture_url);
-        }
-      }
-    };
-    fetchUser();
-  }, []);
-
-  return { initial, profilePicture };
 }
 
 const Header = ({
@@ -57,6 +26,7 @@ const Header = ({
   const avatarRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { profilePicture, initial } = useUser();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -137,12 +107,12 @@ const Header = ({
                 tabIndex={0}
                 style={{ 
                   position: 'relative',
-                  background: getAvatarInitial().profilePicture ? 'none' : '#2563eb'
+                  background: profilePicture ? 'none' : '#2563eb'
                 }}
               >
-                {getAvatarInitial().profilePicture ? (
+                {profilePicture ? (
                   <img 
-                    src={getAvatarInitial().profilePicture} 
+                    src={profilePicture} 
                     alt="Profile" 
                     style={{ 
                       width: '100%', 
@@ -152,7 +122,7 @@ const Header = ({
                     }} 
                   />
                 ) : (
-                  getAvatarInitial().initial
+                  initial
                 )}
                 {dropdownOpen && (
                   <div className="profile-dropdown">
