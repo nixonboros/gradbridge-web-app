@@ -405,7 +405,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                 >
                   {(tempProfilePicture || profileData.profile_picture_url) ? (
                     <img 
-                      src={tempProfilePicture || profileData.profile_picture_url} 
+                      src={(tempProfilePicture || profileData.profile_picture_url) || undefined} 
                       alt="Profile" 
                       style={{ 
                         width: '100%', 
