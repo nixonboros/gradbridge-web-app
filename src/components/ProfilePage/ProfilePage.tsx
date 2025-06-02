@@ -54,6 +54,8 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   const [isViewingResume, setIsViewingResume] = useState(false);
   const [resumeViewUrl, setResumeViewUrl] = useState<string | null>(null);
 
+  const [originalProfilePicture, setOriginalProfilePicture] = useState<string | null>(null);
+  const [tempProfilePicture, setTempProfilePicture] = useState<string | null>(null);
   const { setProfilePicture } = useUser();
 
   // Clear error after 5 seconds
@@ -102,6 +104,8 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           profile_picture_url: profile.profile_picture_url || null,
           resume_uploaded_at: profile.resume_uploaded_at || null
         });
+        setOriginalProfilePicture(profile.profile_picture_url);
+        setTempProfilePicture(null);
       } catch (err) {
         setFetchError('An error occurred while fetching profile.');
       } finally {
@@ -125,10 +129,22 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         return;
       }
       const userId = user.id;
+
+      // If there's a new profile picture, delete the old one
+      if (tempProfilePicture && originalProfilePicture) {
+        const oldFilePath = originalProfilePicture.split('/').pop();
+        if (oldFilePath) {
+          await supabase.storage
+            .from('profile-avatars')
+            .remove([`${user.id}/${oldFilePath}`]);
+        }
+      }
+
       // Update user metadata in Supabase Auth
       const { error: userError } = await supabase.auth.updateUser({
         data: { full_name: profileData.name }
       });
+
       // Update profiles table (for profile info)
       const { error: profileError } = await supabase
         .from('profiles')
@@ -141,15 +157,21 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           experience: profileData.experience || [],
           about: profileData.about || null,
           skills: profileData.skills || [],
-          // resume_url: null, // ignore for now
-          // profile_picture_url: null, // ignore for now
+          profile_picture_url: tempProfilePicture || originalProfilePicture || null
         })
         .eq('id', userId);
+
       if (userError || profileError) {
         setError('Failed to update profile. Please try again.');
         setIsLoading(false);
         return;
       }
+
+      // Update the global profile picture state
+      const newProfilePicture = tempProfilePicture || originalProfilePicture;
+      setProfilePicture(newProfilePicture);
+      setOriginalProfilePicture(newProfilePicture);
+      setTempProfilePicture(null);
       setEditMode(false);
       navigate('/profile');
     } finally {
@@ -157,24 +179,32 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    if (tempProfilePicture) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Delete the temporary profile picture
+        const tempFilePath = tempProfilePicture.split('/').pop();
+        if (tempFilePath) {
+          await supabase.storage
+            .from('profile-avatars')
+            .remove([`${user.id}/${tempFilePath}`]);
+        }
+      } catch (err) {
+        console.error('Error cleaning up temporary profile picture:', err);
+      }
+    }
+
     // Reset form data to original values
     if (profileData) {
       setProfileData({
-        name: profileData.name,
-        email: profileData.email,
-        age: profileData.age,
-        location: profileData.location,
-        role: profileData.role,
-        linkedin: profileData.linkedin,
-        about: profileData.about,
-        skills: profileData.skills,
-        experience: profileData.experience,
-        resume_url: profileData.resume_url,
-        profile_picture_url: profileData.profile_picture_url,
-        resume_uploaded_at: profileData.resume_uploaded_at
+        ...profileData,
+        profile_picture_url: originalProfilePicture
       });
     }
+    setTempProfilePicture(null);
     setEditMode(false);
     navigate('/profile');
   };
@@ -296,16 +326,6 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       
-      // First, delete any existing profile picture
-      if (profileData.profile_picture_url) {
-        const oldFilePath = profileData.profile_picture_url.split('/').pop();
-        if (oldFilePath) {
-          await supabase.storage
-            .from('profile-avatars')
-            .remove([`${user.id}/${oldFilePath}`]);
-        }
-      }
-      
       // Generate a unique filename using timestamp
       const timestamp = new Date().getTime();
       const fileExtension = file.name.split('.').pop();
@@ -322,15 +342,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
       const { data: urlData } = supabase.storage
         .from('profile-avatars')
         .getPublicUrl(filePath);
-      
-      await supabase
-        .from('profiles')
-        .update({
-          profile_picture_url: urlData.publicUrl
-        })
-        .eq('id', user.id);
 
-      setProfilePicture(urlData.publicUrl);
+      // Store the new URL as temporary
+      setTempProfilePicture(urlData.publicUrl);
       setProfileData(prev => prev ? {
         ...prev,
         profile_picture_url: urlData.publicUrl
@@ -386,12 +400,12 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                   onClick={() => editMode && fileInputRef.current?.click()}
                   style={{ 
                     cursor: editMode ? 'pointer' : 'default',
-                    background: profileData.profile_picture_url ? 'none' : '#2563eb'
+                    background: (tempProfilePicture || profileData.profile_picture_url) ? 'none' : '#2563eb'
                   }}
                 >
-                  {profileData.profile_picture_url ? (
+                  {(tempProfilePicture || profileData.profile_picture_url) ? (
                     <img 
-                      src={profileData.profile_picture_url} 
+                      src={tempProfilePicture || profileData.profile_picture_url} 
                       alt="Profile" 
                       style={{ 
                         width: '100%', 
