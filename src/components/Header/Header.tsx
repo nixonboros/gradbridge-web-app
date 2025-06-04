@@ -60,21 +60,33 @@ const Header = ({
       {showNavTabs && (
         <nav className="home-nav">
           <div className="tab-container">
-            <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-              <FiHome className="nav-icon" />
-              Home
+            <Link
+              to="/home"
+              className={`nav-item${location.pathname === '/home' ? ' active' : ''}`}
+            >
+              <div className="nav-icon"><FiHome size={22} /></div>
+              <span>Home</span>
             </Link>
-            <Link to="/opportunities" className={`nav-item ${location.pathname === '/opportunities' ? 'active' : ''}`}>
-              <FiFileText className="nav-icon" />
-              Opportunities
+            <Link
+              to="/events"
+              className={`nav-item${location.pathname === '/events' ? ' active' : ''}`}
+            >
+              <div className="nav-icon"><FiShare2 size={22} /></div>
+              <span>Events</span>
             </Link>
-            <Link to="/network" className={`nav-item ${location.pathname === '/network' ? 'active' : ''}`}>
-              <FiUsers className="nav-icon" />
-              Network
+            <Link
+              to="/resume"
+              className={`nav-item${location.pathname === '/resume' ? ' active' : ''}`}
+            >
+              <div className="nav-icon"><FiFileText size={22} /></div>
+              <span>Resume</span>
             </Link>
-            <Link to="/share" className={`nav-item ${location.pathname === '/share' ? 'active' : ''}`}>
-              <FiShare2 className="nav-icon" />
-              Share
+            <Link
+              to="/interview"
+              className={`nav-item${location.pathname === '/interview' ? ' active' : ''}`}
+            >
+              <div className="nav-icon"><FiUsers size={22} /></div>
+              <span>Interview</span>
             </Link>
           </div>
         </nav>
