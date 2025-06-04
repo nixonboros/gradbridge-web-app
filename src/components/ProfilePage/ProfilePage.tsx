@@ -1,6 +1,6 @@
 import './ProfilePage.css';
 import Header from '../Header/Header';
-import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload, FiUpload, FiFileText, FiEdit2, FiPlus, FiX, FiCamera } from 'react-icons/fi';
+import { FiUser, FiMapPin, FiBriefcase, FiLinkedin, FiEye, FiDownload, FiUpload, FiFileText, FiEdit2, FiPlus, FiX, FiCamera, FiTrash2 } from 'react-icons/fi';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
@@ -57,6 +57,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   const [originalProfilePicture, setOriginalProfilePicture] = useState<string | null>(null);
   const [tempProfilePicture, setTempProfilePicture] = useState<string | null>(null);
   const { refreshUserData } = useUser();
+
+  // New state for pending avatar delete
+  const [pendingDeleteAvatar, setPendingDeleteAvatar] = useState(false);
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -140,6 +143,16 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         }
       }
 
+      // If avatar is pending delete, delete from storage
+      if (pendingDeleteAvatar && originalProfilePicture) {
+        const oldFilePath = originalProfilePicture.split('/').pop();
+        if (oldFilePath) {
+          await supabase.storage
+            .from('profile-avatars')
+            .remove([`${user.id}/${oldFilePath}`]);
+        }
+      }
+
       // Update user metadata in Supabase Auth
       const { error: userError } = await supabase.auth.updateUser({
         data: { full_name: profileData.name }
@@ -157,7 +170,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
           experience: profileData.experience || [],
           about: profileData.about || null,
           skills: profileData.skills || [],
-          profile_picture_url: tempProfilePicture || originalProfilePicture || null
+          profile_picture_url: pendingDeleteAvatar ? null : (tempProfilePicture || originalProfilePicture || null)
         })
         .eq('id', userId);
 
@@ -169,8 +182,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
 
       // Update the global profile picture state and refresh user data
       await refreshUserData();
-      setOriginalProfilePicture(tempProfilePicture || originalProfilePicture);
+      setOriginalProfilePicture(pendingDeleteAvatar ? null : (tempProfilePicture || originalProfilePicture));
       setTempProfilePicture(null);
+      setPendingDeleteAvatar(false);
       setEditMode(false);
       navigate('/profile');
     } finally {
@@ -204,6 +218,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
       });
     }
     setTempProfilePicture(null);
+    setPendingDeleteAvatar(false);
     setEditMode(false);
     navigate('/profile');
   };
@@ -265,26 +280,22 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
   };
 
   // Helper functions for description points
-  const handleAddDescriptionPoint = (expIndex: number, isNew = false) => {
-    if (isNew) {
-      setProfileData(prev => prev ? {
-        ...prev,
-        experience: prev.experience.map((exp, i) =>
-          i === expIndex ? { ...exp, description: [...exp.description, ''] } : exp
-        )
-      } : prev);
-    }
+  const handleAddDescriptionPoint = (expIndex: number) => {
+    setProfileData(prev => prev ? {
+      ...prev,
+      experience: prev.experience.map((exp, i) =>
+        i === expIndex ? { ...exp, description: [...exp.description, ''] } : exp
+      )
+    } : prev);
   };
 
-  const handleRemoveDescriptionPoint = (expIndex: number, descIndex: number, isNew = false) => {
-    if (isNew) {
-      setProfileData(prev => prev ? {
-        ...prev,
-        experience: prev.experience.map((exp, i) =>
-          i === expIndex ? { ...exp, description: exp.description.filter((_, j) => j !== descIndex) } : exp
-        )
-      } : prev);
-    }
+  const handleRemoveDescriptionPoint = (expIndex: number, descIndex: number) => {
+    setProfileData(prev => prev ? {
+      ...prev,
+      experience: prev.experience.map((exp, i) =>
+        i === expIndex ? { ...exp, description: exp.description.filter((_, j) => j !== descIndex) } : exp
+      )
+    } : prev);
   };
 
   const handleViewResume = async () => {
@@ -354,6 +365,49 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
     }
   };
 
+  const handleDeleteResume = async () => {
+    if (!profileData?.resume_url) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get the file path from the URL
+      const filePath = profileData.resume_url.split('/').pop();
+      if (!filePath) return;
+
+      // Delete the file from storage
+      await supabase.storage
+        .from('resumes')
+        .remove([`${user.id}/${filePath}`]);
+
+      // Update the profile to remove resume URL
+      await supabase
+        .from('profiles')
+        .update({
+          resume_url: null,
+          resume_uploaded_at: null
+        })
+        .eq('id', user.id);
+
+      // Update local state
+      setProfileData(prev => prev ? {
+        ...prev,
+        resume_url: null,
+        resume_uploaded_at: null
+      } : prev);
+    } catch (err) {
+      console.error('Error deleting resume:', err);
+      setError('Failed to delete resume');
+    }
+  };
+
+  const handleDeleteAvatar = () => {
+    setPendingDeleteAvatar(true);
+    setTempProfilePicture(null);
+    setProfileData(prev => prev ? { ...prev, profile_picture_url: null } : prev);
+  };
+
   if (fetching) {
     return (
       <div className="profile-root">
@@ -402,7 +456,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                     background: (tempProfilePicture || profileData.profile_picture_url) ? 'none' : '#2563eb'
                   }}
                 >
-                  {(tempProfilePicture || profileData.profile_picture_url) ? (
+                  {(!pendingDeleteAvatar && (tempProfilePicture || profileData.profile_picture_url)) ? (
                     <img 
                       src={(tempProfilePicture || profileData.profile_picture_url) || undefined} 
                       alt="Profile" 
@@ -421,6 +475,19 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                   {editMode && isHoveringAvatar && (
                     <div className="profile-avatar-overlay">
                       <FiCamera color="white" size={24} />
+                      {(!pendingDeleteAvatar && (tempProfilePicture || profileData.profile_picture_url)) && (
+                        <button
+                          className="profile-avatar-delete-btn"
+                          type="button"
+                          title="Delete avatar"
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleDeleteAvatar();
+                          }}
+                        >
+                          <FiTrash2 size={20} />
+                        </button>
+                      )}
                     </div>
                   )}
                   <input
@@ -586,13 +653,23 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
               <div className="profile-card profile-resume">
                 <div className="profile-resume-header">
                   <h4>Resume/CV</h4>
-                  <button 
-                    className="profile-upload-btn"
-                    onClick={() => resumeInputRef.current?.click()}
-                  >
-                    <FiUpload style={{ fontSize: '1.1em', marginRight: 4 }} />
-                    Upload New
-                  </button>
+                  {editMode ? (
+                    <button 
+                      className="profile-upload-btn"
+                      onClick={() => resumeInputRef.current?.click()}
+                    >
+                      <FiUpload style={{ fontSize: '1.1em', marginRight: 4 }} />
+                      Upload New
+                    </button>
+                  ) : (
+                    <button 
+                      className="profile-upload-btn"
+                      onClick={() => resumeInputRef.current?.click()}
+                    >
+                      <FiUpload style={{ fontSize: '1.1em', marginRight: 4 }} />
+                      Upload New
+                    </button>
+                  )}
                   <input
                     type="file"
                     ref={resumeInputRef}
@@ -723,6 +800,12 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
                           }
                         }}
                       ><FiDownload /></button>
+                      {editMode && (
+                        <button 
+                          className="profile-resume-delete"
+                          onClick={handleDeleteResume}
+                        ><FiX /></button>
+                      )}
                     </div>
                   </div>
                 ) : (

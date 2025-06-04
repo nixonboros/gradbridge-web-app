@@ -294,6 +294,30 @@
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 20px;
   z-index: 2;
+  padding: 0;
+}
+
+.profile-avatar-delete-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: #fff;
+  border: none;
+  color: #ef4444;
+  border-radius: 50%;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  cursor: pointer;
+  z-index: 3;
+  transition: background 0.2s, color 0.2s;
+}
+
+.profile-avatar-delete-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .profile-detail-icon {
@@ -805,4 +829,25 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.profile-resume-delete {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.profile-resume-delete:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.profile-resume-delete svg {
+  font-size: 1.2rem;
 }
