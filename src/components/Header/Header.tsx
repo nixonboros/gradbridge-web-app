@@ -26,7 +26,7 @@ const Header = ({
   const avatarRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { profilePicture, initial } = useUser();
+  const { profilePicture, initial, isLoading } = useUser();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -57,42 +57,28 @@ const Header = ({
           <img src={gradBridgeLogo} alt="GradBridge" className="home-logo" />
         </Link>
       </div>
-      <div className="home-nav">
-        {showNavTabs ? (
+      {showNavTabs && (
+        <nav className="home-nav">
           <div className="tab-container">
-            <Link
-              to="/home"
-              className={`nav-item${location.pathname === '/home' ? ' active' : ''}`}
-            >
-              <div className="nav-icon"><FiHome size={22} /></div>
-              <span>Home</span>
+            <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
+              <FiHome className="nav-icon" />
+              Home
             </Link>
-            <Link
-              to="/events"
-              className={`nav-item${location.pathname === '/events' ? ' active' : ''}`}
-            >
-              <div className="nav-icon"><FiShare2 size={22} /></div>
-              <span>Events</span>
+            <Link to="/opportunities" className={`nav-item ${location.pathname === '/opportunities' ? 'active' : ''}`}>
+              <FiFileText className="nav-icon" />
+              Opportunities
             </Link>
-            <Link
-              to="/resume"
-              className={`nav-item${location.pathname === '/resume' ? ' active' : ''}`}
-            >
-              <div className="nav-icon"><FiFileText size={22} /></div>
-              <span>Resume</span>
+            <Link to="/network" className={`nav-item ${location.pathname === '/network' ? 'active' : ''}`}>
+              <FiUsers className="nav-icon" />
+              Network
             </Link>
-            <Link
-              to="/interview"
-              className={`nav-item${location.pathname === '/interview' ? ' active' : ''}`}
-            >
-              <div className="nav-icon"><FiUsers size={22} /></div>
-              <span>Interview</span>
+            <Link to="/share" className={`nav-item ${location.pathname === '/share' ? 'active' : ''}`}>
+              <FiShare2 className="nav-icon" />
+              Share
             </Link>
           </div>
-        ) : (
-          <div className="tab-container" style={{ visibility: 'hidden' }} />
-        )}
-      </div>
+        </nav>
+      )}
       <div className="home-header-right">
         <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
           <div style={{ width: 44, height: 44, marginRight: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -107,10 +93,22 @@ const Header = ({
                 tabIndex={0}
                 style={{ 
                   position: 'relative',
-                  background: profilePicture ? 'none' : '#2563eb'
+                  background: isLoading ? '#e2e8f0' : (profilePicture ? 'none' : '#2563eb'),
+                  transition: 'background-color 0.2s ease'
                 }}
               >
-                {profilePicture ? (
+                {isLoading ? (
+                  <div style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    color: '#94a3b8'
+                  }}>
+                    ...
+                  </div>
+                ) : profilePicture ? (
                   <img 
                     src={profilePicture} 
                     alt="Profile" 
