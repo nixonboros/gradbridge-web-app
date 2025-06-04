@@ -56,7 +56,7 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
 
   const [originalProfilePicture, setOriginalProfilePicture] = useState<string | null>(null);
   const [tempProfilePicture, setTempProfilePicture] = useState<string | null>(null);
-  const { setProfilePicture } = useUser();
+  const { refreshUserData } = useUser();
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -167,10 +167,9 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
         return;
       }
 
-      // Update the global profile picture state
-      const newProfilePicture = tempProfilePicture || originalProfilePicture;
-      setProfilePicture(newProfilePicture);
-      setOriginalProfilePicture(newProfilePicture);
+      // Update the global profile picture state and refresh user data
+      await refreshUserData();
+      setOriginalProfilePicture(tempProfilePicture || originalProfilePicture);
       setTempProfilePicture(null);
       setEditMode(false);
       navigate('/profile');
