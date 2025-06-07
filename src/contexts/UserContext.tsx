@@ -18,7 +18,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const isMounted = useRef(true);
-  const isInitialLoad = useRef(true);
   const previousUserId = useRef<string | null>(null);
 
   // Clear state when component unmounts
@@ -75,7 +74,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // First effect to get the user ID and handle auth state changes
+  // Handle auth state changes and user data fetching
   useEffect(() => {
     const fetchUserId = async () => {
       try {
@@ -83,7 +82,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         if (!isMounted.current) return;
         
         if (user) {
-          // If this is a different user than before, clear the old data immediately
           if (previousUserId.current !== user.id) {
             setProfilePicture(null);
             setInitial('#');
@@ -104,12 +102,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     fetchUserId();
 
-    // Subscribe to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_, session) => {
       if (!isMounted.current) return;
       
       if (session?.user) {
-        // If this is a different user than before, clear the old data immediately
         if (previousUserId.current !== session.user.id) {
           setProfilePicture(null);
           setInitial('#');
@@ -130,7 +126,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Second effect to fetch user data when userId changes
+  // Fetch user data when userId changes
   useEffect(() => {
     if (userId) {
       fetchUserData(true);
@@ -140,7 +136,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   // Handle window focus
   useEffect(() => {
     const handleFocus = () => {
-      if (userId && !isInitialLoad.current) {
+      if (userId) {
         fetchUserData(false);
       }
     };
@@ -148,13 +144,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, [userId]);
-
-  // Mark initial load as complete
-  useEffect(() => {
-    if (!isLoading && isInitialLoad.current) {
-      isInitialLoad.current = false;
-    }
-  }, [isLoading]);
 
   const refreshUserData = async () => {
     if (userId) {
