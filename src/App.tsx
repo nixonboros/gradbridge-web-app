@@ -49,7 +49,11 @@ function App() {
     setLoggedIn(true);
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error signing out:', error.message);
+    }
     setLoggedIn(false);
   };
 
