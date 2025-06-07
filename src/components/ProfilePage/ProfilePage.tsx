@@ -335,6 +335,16 @@ const ProfilePage = ({ onSignOut, initialEditMode = false }: ProfilePageProps) =
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      // If there's a temporary profile picture, delete it first
+      if (tempProfilePicture) {
+        const oldFilePath = tempProfilePicture.split('/').pop();
+        if (oldFilePath) {
+          await supabase.storage
+            .from('profile-avatars')
+            .remove([`${user.id}/${oldFilePath}`]);
+        }
+      }
       
       // Generate a unique filename using timestamp
       const timestamp = new Date().getTime();
