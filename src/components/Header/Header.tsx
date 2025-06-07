@@ -26,7 +26,7 @@ const Header = ({
   const avatarRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { profilePicture, initial, isLoading } = useUser();
+  const { profilePicture, initial } = useUser();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -105,22 +105,11 @@ const Header = ({
                 tabIndex={0}
                 style={{ 
                   position: 'relative',
-                  background: isLoading ? '#e2e8f0' : (profilePicture ? 'none' : '#2563eb'),
+                  background: profilePicture ? 'none' : '#2563eb',
                   transition: 'background-color 0.2s ease'
                 }}
               >
-                {isLoading ? (
-                  <div style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    color: '#94a3b8'
-                  }}>
-                    ...
-                  </div>
-                ) : profilePicture ? (
+                {profilePicture ? (
                   <img 
                     src={profilePicture} 
                     alt="Profile" 

@@ -1,124 +1,111 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import type { Session, User } from '@supabase/supabase-js';
 
 interface UserContextType {
   profilePicture: string | null;
-  setProfilePicture: (url: string | null) => void;
   initial: string;
-  setInitial: (initial: string) => void;
-  isLoading: boolean;
   refreshUserData: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+// Cache keys
+const USER_PROFILE_CACHE_KEY = 'gradbridge_user_profile';
+
+interface CachedProfile {
+  profilePicture: string | null;
+  initial: string;
+  userId: string;
+  lastUpdated: number;
+}
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
-  const [initial, setInitial] = useState('#');
-  const [isLoading, setIsLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
-  const isMounted = useRef(true);
-  const previousUserId = useRef<string | null>(null);
+  // Initialize from cache immediately
+  const cachedProfile = localStorage.getItem(USER_PROFILE_CACHE_KEY);
+  const parsedCache: CachedProfile | null = cachedProfile ? JSON.parse(cachedProfile) : null;
+  
+  const [profilePicture, setProfilePicture] = useState<string | null>(parsedCache?.profilePicture ?? null);
+  const [initial, setInitial] = useState(parsedCache?.initial ?? '#');
+  const [session, setSession] = useState<Session | null>(null);
 
-  // Clear state when component unmounts
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
+  // Update cache helper
+  const updateCache = (data: Partial<CachedProfile>) => {
+    const currentCache = localStorage.getItem(USER_PROFILE_CACHE_KEY);
+    const parsedCache: CachedProfile | null = currentCache ? JSON.parse(currentCache) : null;
+    
+    const newCache: CachedProfile = {
+      profilePicture: data.profilePicture ?? parsedCache?.profilePicture ?? null,
+      initial: data.initial ?? parsedCache?.initial ?? '#',
+      userId: data.userId ?? parsedCache?.userId ?? '',
+      lastUpdated: Date.now()
     };
-  }, []);
+    
+    localStorage.setItem(USER_PROFILE_CACHE_KEY, JSON.stringify(newCache));
+  };
 
-  const fetchUserData = async (showLoading: boolean = false) => {
-    if (!userId || !isMounted.current) {
-      setProfilePicture(null);
-      setInitial('#');
-      setIsLoading(false);
-      return;
-    }
+  // Fetch user data including profile picture
+  const fetchUserData = async (user: User) => {
+    console.log('[UserContext] Fetching user data for:', user.id);
 
     try {
-      if (showLoading) {
-        setIsLoading(true);
+      let newInitial = '#';
+      // Get user metadata
+      if (user.user_metadata?.full_name) {
+        newInitial = user.user_metadata.full_name.trim().split(' ')[0][0].toUpperCase();
+        console.log('[UserContext] Setting initial:', newInitial);
+        setInitial(newInitial);
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !isMounted.current) return;
-      
-      if (user.user_metadata?.full_name) {
-        setInitial(user.user_metadata.full_name.trim().split(' ')[0][0].toUpperCase());
-      }
-      
-      // Fetch profile picture URL
-      const { data: profile } = await supabase
+      // Fetch profile picture
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('profile_picture_url')
-        .eq('id', userId)
+        .eq('id', user.id)
         .single();
-      
-      if (!isMounted.current) return;
 
-      if (profile?.profile_picture_url) {
-        setProfilePicture(profile.profile_picture_url);
-      } else {
-        setProfilePicture(null);
+      if (profileError) {
+        console.error('[UserContext] Error fetching profile:', profileError);
+        throw profileError;
       }
+
+      console.log('[UserContext] Profile fetch result:', { profile });
+      
+      const newProfilePicture = profile?.profile_picture_url || null;
+      
+      // Only update state and cache if data has changed
+      if (newProfilePicture !== profilePicture) {
+        setProfilePicture(newProfilePicture);
+      }
+      if (newInitial !== initial) {
+        setInitial(newInitial);
+      }
+
+      // Update cache with new data
+      updateCache({
+        profilePicture: newProfilePicture,
+        initial: newInitial,
+        userId: user.id
+      });
+
     } catch (error) {
-      console.error('Error fetching user data:', error);
-      if (isMounted.current) {
-        setProfilePicture(null);
-        setInitial('#');
-      }
-    } finally {
-      if (isMounted.current) {
-        setIsLoading(false);
-      }
+      console.error('[UserContext] Error in fetchUserData:', error);
+      // Don't clear the cache on error, keep showing the last known good state
     }
   };
 
-  // Handle auth state changes and user data fetching
+  // Handle auth state changes
   useEffect(() => {
-    const fetchUserId = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!isMounted.current) return;
-        
-        if (user) {
-          if (previousUserId.current !== user.id) {
-            setProfilePicture(null);
-            setInitial('#');
-            setIsLoading(true);
-            previousUserId.current = user.id;
-          }
-          setUserId(user.id);
-        } else {
-          setUserId(null);
-          setProfilePicture(null);
-          setInitial('#');
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Error fetching user ID:', error);
-      }
-    };
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('[UserContext] Initial session:', session?.user?.id);
+      setSession(session);
+    });
 
-    fetchUserId();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_, session) => {
-      if (!isMounted.current) return;
-      
-      if (session?.user) {
-        if (previousUserId.current !== session.user.id) {
-          setProfilePicture(null);
-          setInitial('#');
-          setIsLoading(true);
-          previousUserId.current = session.user.id;
-        }
-        setUserId(session.user.id);
-      } else {
-        setUserId(null);
-        setProfilePicture(null);
-        setInitial('#');
-        setIsLoading(false);
-      }
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('[UserContext] Auth state changed:', { event, userId: session?.user?.id });
+      setSession(session);
     });
 
     return () => {
@@ -126,39 +113,31 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Fetch user data when userId changes
+  // Handle session changes
   useEffect(() => {
-    if (userId) {
-      fetchUserData(true);
+    if (session?.user) {
+      console.log('[UserContext] Session user found, fetching data');
+      fetchUserData(session.user);
+    } else {
+      console.log('[UserContext] No session user, resetting state');
+      setProfilePicture(null);
+      setInitial('');
+      localStorage.removeItem(USER_PROFILE_CACHE_KEY);
     }
-  }, [userId]);
-
-  // Handle window focus
-  useEffect(() => {
-    const handleFocus = () => {
-      if (userId) {
-        fetchUserData(false);
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [userId]);
+  }, [session]);
 
   const refreshUserData = async () => {
-    if (userId) {
-      await fetchUserData(true);
+    console.log('[UserContext] Manual refresh requested');
+    if (session?.user) {
+      await fetchUserData(session.user);
     }
   };
 
   return (
     <UserContext.Provider value={{ 
-      profilePicture, 
-      setProfilePicture, 
-      initial, 
-      setInitial, 
-      isLoading,
-      refreshUserData 
+      profilePicture,
+      initial,
+      refreshUserData
     }}>
       {children}
     </UserContext.Provider>
