@@ -11,47 +11,22 @@ The platform is designed to connect graduates with industry professionals and em
 - **Mock Interview Simulations:** Practice and prepare for real interviews with AI-powered mock interview tools.
 - **Professional Networking:** Build connections with mentors, recruiters, and peers in your field.
 
-## Getting Started
-
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
-
-3. **Build for production:**
-   ```bash
-   npm run build
-   ```
-
 ## Project Structure
 ```
-gradbridge-web-app
-├── public/                          # Static files served directly 
-├── src/                             # Source code for the application
-│   ├── assets/                      # Images, SVGs, and other static assets
-│   ├── components/                  # Reusable React components
-│   │   └── LoginPage/               # Login page component and its styles
-│   │       ├── LoginPage.tsx
-│   │       └── LoginPage.css
-│   ├── pages/                       # (Recommended) Route-level components/pages
-│   ├── App.tsx                      # Main application component
-│   ├── App.css                      # Global styles for the app
-│   ├── index.css                    # CSS resets and base styles
-│   ├── main.tsx                     # Entry point: renders <App /> into the DOM
-│   └── vite-env.d.ts                # Vite-specific TypeScript definitions
-├── .gitignore                       # Git ignore rules
-├── package.json                     # Project metadata and dependencies
-├── package-lock.json                # Exact dependency versions
-├── tsconfig.json                    # TypeScript configuration
-├── tsconfig.node.json               # Node-specific TypeScript config
-├── tsconfig.app.json                # App-specific TypeScript config
-├── vite.config.ts                   # Vite build tool configuration
-└── README.md                        # Project documentation
+gradbridge-web-app/
+├── public/                # Static files served directly
+├── src/                   # Source code
+│   ├── assets/            # Images, SVGs, etc.
+│   ├── components/        # Reusable React components
+│   ├── contexts/          # React context providers
+│   ├── lib/               # Utility libraries (e.g., Supabase)
+│   ├── App.tsx            # Main app component
+│   ├── main.tsx           # Entry point
+│   └── index.css          # Base styles
+├── package.json           # Project metadata and dependencies
+├── tsconfig.json          # TypeScript configuration
+├── vite.config.ts         # Vite build tool config
+└── README.md              # Project documentation
 ```
 ---
 
