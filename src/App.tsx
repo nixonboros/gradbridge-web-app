@@ -9,7 +9,7 @@ import InterviewPage from './components/InterviewPage/InterviewPage';
 import SplashScreen from './components/SplashScreen/SplashScreen';
 import SignUpPage from './components/SignUpPage/SignUpPage';
 import ProfilePage from './components/ProfilePage/ProfilePage';
-import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import { UserProvider } from './contexts/UserContext';
 
@@ -27,6 +27,15 @@ function ProfileRoute({ onSignOut }: ProfileRouteProps) {
       initialEditMode={isEditMode}
     />
   );
+}
+
+function LandingPageWithSignOut({ loggedIn, handleSignOut }: { loggedIn: boolean, handleSignOut: () => Promise<void> }) {
+  const navigate = useNavigate();
+  const handleLandingSignOut = async () => {
+    await handleSignOut();
+    navigate('/login', { replace: true });
+  };
+  return <LandingPage loggedIn={loggedIn} onSignOut={handleLandingSignOut} />;
 }
 
 function App() {
@@ -63,10 +72,7 @@ function App() {
     <UserProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage loggedIn={loggedIn} onSignOut={() => {
-            handleSignOut();
-            window.location.href = '/login';
-          }} />} />
+          <Route path="/" element={<LandingPageWithSignOut loggedIn={loggedIn} handleSignOut={handleSignOut} />} />
           <Route path="/login" element={
             loggedIn ? <Navigate to="/home" /> : <LoginPage onLogin={handleLogin} />
           } />
